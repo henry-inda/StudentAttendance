@@ -1,0 +1,35 @@
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-title {
+    color: rgb(15, 76, 117);
+}
+
+#attendanceChart {
+    max-height: 300px;
+}
+
+.table-alerts {
+    margin-top: 20px;
+}
+
+.content {
+    padding-top: 80px;
+    padding-left: 250px; /* Same as sidebar width */
+    transition: padding-left 0.3s;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .content {
+        padding-left: 0;
+    }
+}
