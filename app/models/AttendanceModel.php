@@ -92,34 +92,39 @@ class AttendanceModel {
         $this->db->bind(':end_date', $endDate);
         $rows = $this->db->resultSet();
 
-        // Convert rows to map by YEARWEEK string
+        // Convert rows to map by YEAR-WEEK key (e.g., 2025-40)
         $map = [];
         foreach ($rows as $r) {
-            $key = $r->yy . '-' . str_pad($r->ww, 2, '0', STR_PAD_LEFT);
+            $yy = (int)$r->yy;
+            $ww = str_pad((int)$r->ww, 2, '0', STR_PAD_LEFT);
+            $key = $yy . '-' . $ww;
             $map[$key] = [
                 'present' => (int)$r->present_count,
                 'total' => (int)$r->total_count
             ];
         }
 
-        // Build labels and data for each week in the window
+        // Build labels (week numbers) and data for each week in the window.
+        // Use null for weeks with no data so Chart.js will render gaps.
         $labels = [];
         $data = [];
         for ($i = $weeks - 1; $i >= 0; $i--) {
             $weekStart = strtotime("-" . $i . " weeks", strtotime($endDate));
-            $year = date('o', $weekStart); // ISO-8601 year number
+            // ISO week year and number
+            $year = date('o', $weekStart);
             $weekNum = date('W', $weekStart);
             $key = $year . '-' . $weekNum;
-            // label as Mon dd-mm
-            $label = date('M j', strtotime('monday this week', $weekStart));
-            $labels[] = $label;
+
+            // Label format: Week {WW} (use numeric week without leading zero)
+            $labels[] = 'Week ' . intval($weekNum);
 
             if (isset($map[$key]) && $map[$key]['total'] > 0) {
                 $pct = round(($map[$key]['present'] / $map[$key]['total']) * 100, 2);
+                $data[] = $pct;
             } else {
-                $pct = 0;
+                // Use null to indicate missing data for that week
+                $data[] = null;
             }
-            $data[] = $pct;
         }
 
         return ['labels' => $labels, 'data' => $data];
