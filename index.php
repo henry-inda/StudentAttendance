@@ -1,4 +1,5 @@
 <?php
+ob_start();
 require_once 'app/config/config.php'; // Include config.php first
 require_once 'app/core/Database.php'; // Include Database.php early
 
@@ -60,3 +61,4 @@ require_once 'app/core/Controller.php';
 
 // Instantiate App
 $app = new App();
+ob_end_flush();

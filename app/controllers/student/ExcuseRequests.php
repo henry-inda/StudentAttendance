@@ -6,6 +6,7 @@ class ExcuseRequests extends Controller {
         $this->excuseRequestModel = $this->model('ExcuseRequest');
         $this->enrollmentModel = $this->model('StudentEnrollment');
         $this->scheduleModel = $this->model('ScheduleModel'); // Updated to ScheduleModel
+        $this->unitModel = $this->model('Unit');
     }
 
     public function index() {
@@ -93,12 +94,26 @@ class ExcuseRequests extends Controller {
         }
     }
 
-    public function show($id) { // Renamed from view($id) to show($id)
+    public function viewRequest($id) {
+        // Verify that the request belongs to the current student
         $excuseRequest = $this->excuseRequestModel->findById($id);
+        
+        if (!$excuseRequest || $excuseRequest->student_id != get_session('user_id')) {
+            flash_message('error', 'You are not authorized to view this excuse request');
+            redirect('student/excuseRequests');
+            return;
+        }
+
         $data = [
             'title' => 'Excuse Request Details',
             'excuseRequest' => $excuseRequest
         ];
         $this->view('student/excuse_requests/view', $data);
+    }
+
+    public function getStatus($id) {
+        $excuseRequest = $this->excuseRequestModel->findById($id);
+        header('Content-Type: application/json');
+        echo json_encode(['status' => $excuseRequest->status]);
     }
 }

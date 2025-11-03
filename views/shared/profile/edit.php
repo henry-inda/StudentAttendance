@@ -35,4 +35,34 @@
     </div>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+
+            fetch('<?php echo BASE_URL; ?>profile/edit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the name in the navbar
+                    const profileDropdown = document.getElementById('profileDropdown');
+                    profileDropdown.innerHTML = `<i class="fas fa-user"></i> ${data.user.full_name}`;
+
+                    // Optional: show a success message
+                    alert('Profile updated successfully!');
+                } else {
+                    // Optional: show an error message
+                    alert('Failed to update profile. Please try again.');
+                }
+            });
+        });
+    });
+</script>
+
 <?php require_once 'views/layouts/footer.php'; ?>

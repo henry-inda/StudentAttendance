@@ -4,6 +4,7 @@ class Auth extends Controller {
         // Helpers are not automatically loaded, so we need to require them
         require_once 'app/helpers/session_helper.php';
         require_once 'app/helpers/auth_middleware.php';
+        require_once 'app/helpers/email_helper.php';
         $this->userModel = $this->model('User');
     }
 
@@ -74,16 +75,20 @@ class Auth extends Controller {
         // Redirect based on role
         switch($user->role) {
             case 'admin':
-                redirect('admin/dashboard');
+                header('Location: ' . BASE_URL . 'admin/dashboard');
+                exit;
                 break;
             case 'lecturer':
-                redirect('lecturer/dashboard');
+                header('Location: ' . BASE_URL . 'lecturer/dashboard');
+                exit;
                 break;
             case 'student':
-                redirect('student/dashboard');
+                header('Location: ' . BASE_URL . 'student/dashboard');
+                exit;
                 break;
             default:
-                redirect('auth/login');
+                header('Location: ' . BASE_URL . 'auth/login');
+                exit;
         }
     }
 
@@ -94,11 +99,99 @@ class Auth extends Controller {
         unset($_SESSION['user_name']);
         unset($_SESSION['user_role']);
         destroy_session();
-        redirect('auth/login');
+        header('Location: ' . BASE_URL . 'auth/login');
+        exit;
     }
 
     public function forgot_password() {
         // For future enhancement
         $this->view('auth/forgot_password');
+    }
+
+    public function requestPasswordReset() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $email = trim($_POST['email']);
+            $token = $this->userModel->generatePasswordResetToken($email);
+
+            if ($token) {
+                $reset_link = BASE_URL . 'auth/resetPassword/' . $token;
+                $subject = 'Password Reset Request';
+                $body = 'Please click on the following link to reset your password: <a href="' . $reset_link . '">' . $reset_link . '</a>';
+
+                if (send_email($email, $subject, $body)) {
+                    flash_message('success', 'A password reset link has been sent to your email address.');
+                    header('Location: ' . BASE_URL . 'auth/login');
+                    exit;
+                } else {
+                    flash_message('forgot_password_fail', 'Failed to send password reset email. Please try again.');
+                    header('Location: ' . BASE_URL . 'auth/forgot_password');
+                    exit;
+                }
+            } else {
+                flash_message('forgot_password_fail', 'No user found with that email address.');
+                header('Location: ' . BASE_URL . 'auth/login');
+                exit;
+            }
+        }
+    }
+
+
+
+    public function resetPassword($token = '') {
+        if (empty($token)) {
+            header('Location: ' . BASE_URL . 'auth/login');
+            exit;
+        }
+
+        $user = $this->userModel->findUserByPasswordResetToken($token);
+
+        if ($user) {
+            $data = [
+                'token' => $token
+            ];
+            $this->view('auth/reset_password', $data);
+        } else {
+            flash_message('forgot_password_fail', 'Invalid or expired password reset token.');
+            header('Location: ' . BASE_URL . 'auth/forgot_password');
+            exit;
+        }
+    }
+
+    public function updatePassword() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $token = $_POST['token'];
+            $password = $_POST['password'];
+            $confirm_password = $_POST['confirm_password'];
+
+                        if ($password !== $confirm_password) {
+
+                            flash_message('reset_password_fail', 'Passwords do not match.');
+
+                            header('Location: ' . BASE_URL . 'auth/resetPassword/' . $token);
+
+                            exit;
+
+                        }
+
+            
+
+                        if ($this->userModel->resetPasswordWithToken($token, $password)) {
+
+                            flash_message('success', 'Your password has been reset successfully. You can now login.');
+
+                            header('Location: ' . BASE_URL . 'auth/login');
+
+                            exit;
+
+                        } else {
+
+                            flash_message('reset_password_fail', 'Failed to reset password. Please try again.');
+
+                            header('Location: ' . BASE_URL . 'auth/resetPassword/' . $token);
+
+                            exit;
+
+                        }
+        }
     }
 }

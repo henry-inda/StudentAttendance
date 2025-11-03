@@ -34,7 +34,7 @@
                                 <button type="submit" class="btn btn-primary">Login</button>
                             </div>
                             <div class="text-center mt-3">
-                                <a href="#">Forgot password?</a>
+                                <a href="<?php echo BASE_URL; ?>auth/forgot_password">Forgot password?</a>
                             </div>
                         </form>
                     </div>

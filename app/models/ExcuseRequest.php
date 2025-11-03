@@ -12,8 +12,19 @@ class ExcuseRequest {
         return $this->db->resultSet();
     }
 
+    public function getByStudent($student_id) {
+        $this->db->query("SELECT er.*, un.unit_name, s.day_of_week, s.start_time, s.end_time, s.venue 
+                         FROM excuse_requests er 
+                         JOIN schedules s ON er.schedule_id = s.id 
+                         JOIN units un ON s.unit_id = un.id 
+                         WHERE er.student_id = :student_id 
+                         ORDER BY er.created_at DESC");
+        $this->db->bind(':student_id', $student_id);
+        return $this->db->resultSet();
+    }
+
     public function findById($id) {
-        $this->db->query("SELECT er.*, u.full_name as student_name, un.unit_name, s.day_of_week, s.start_time, s.end_time, s.venue FROM excuse_requests er JOIN users u ON er.student_id = u.id JOIN schedules s ON er.schedule_id = s.id JOIN units un ON s.unit_id = un.id WHERE er.id = :id");
+        $this->db->query("SELECT er.*, u.full_name as student_name, un.unit_name, s.day_of_week, s.start_time, s.end_time, s.venue, responder.full_name as responder_name FROM excuse_requests er JOIN users u ON er.student_id = u.id JOIN schedules s ON er.schedule_id = s.id JOIN units un ON s.unit_id = un.id LEFT JOIN users responder ON er.responded_by = responder.id WHERE er.id = :id");
         $this->db->bind(':id', $id);
         return $this->db->single();
     }
@@ -46,12 +57,6 @@ class ExcuseRequest {
         $this->db->bind(':status', $status);
         $this->db->bind(':responded_by', $responded_by);
         return $this->db->execute();
-    }
-
-    public function getByStudent($student_id) {
-        $this->db->query("SELECT er.*, un.unit_name FROM excuse_requests er JOIN schedules s ON er.schedule_id = s.id JOIN units un ON s.unit_id = un.id WHERE er.student_id = :student_id ORDER BY er.created_at DESC");
-        $this->db->bind(':student_id', $student_id);
-        return $this->db->resultSet();
     }
 
     public function getPendingCountByLecturer($lecturer_id) {

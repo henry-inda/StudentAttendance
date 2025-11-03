@@ -19,7 +19,7 @@ class ScheduleModel {
     }
 
     public function findById($id) {
-        $this->db->query("SELECT * FROM schedules WHERE id = :id");
+        $this->db->query("SELECT schedules.*, units.unit_name, units.course_id FROM schedules JOIN units ON schedules.unit_id = units.id WHERE schedules.id = :id");
         $this->db->bind(':id', $id);
         return $this->db->single();
     }
@@ -79,7 +79,7 @@ class ScheduleModel {
         $currentDayOfWeek = date('l');
 
         $this->db->query("
-            SELECT s.*, u.unit_name, us.full_name as lecturer_name
+            SELECT s.*, u.id as unit_id, u.unit_name, us.full_name as lecturer_name
             FROM schedules s
             JOIN units u ON s.unit_id = u.id
             JOIN student_enrollments se ON u.course_id = se.course_id
@@ -88,9 +88,9 @@ class ScheduleModel {
             AND s.status = 'active'
             AND (
                 (s.day_of_week = :current_day_of_week AND s.start_time >= CURTIME()) OR
-                (s.day_of_week IN ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday') AND s.day_of_week > :current_day_of_week)
+                (FIELD(s.day_of_week, 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday') > FIELD(:current_day_of_week, 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'))
             )
-            ORDER BY FIELD(s.day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), s.start_time
+            ORDER BY FIELD(s.day_of_week, 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'), s.start_time
             LIMIT 5
         ");
         $this->db->bind(':student_id', $student_id);

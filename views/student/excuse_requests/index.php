@@ -28,7 +28,7 @@
                     <td><?php echo $request->created_at; ?></td>
                     <td><?php echo $request->responded_at ?? 'N/A'; ?></td>
                     <td>
-                        <a href="<?php echo BASE_URL; ?>student/excuseRequests/view/<?php echo $request->id; ?>" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
+                        <a href="<?php echo BASE_URL; ?>student/excuseRequests/viewRequest/<?php echo $request->id; ?>" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
                     </td>
                 </tr>
                 <?php endforeach; ?>

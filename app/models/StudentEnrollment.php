@@ -18,7 +18,7 @@ class StudentEnrollment {
     }
 
     public function getByCourse($course_id) {
-        $this->db->query("SELECT * FROM student_enrollments WHERE course_id = :course_id");
+        $this->db->query("SELECT student_enrollments.*, users.full_name FROM student_enrollments JOIN users ON student_enrollments.student_id = users.id WHERE course_id = :course_id");
         $this->db->bind(':course_id', $course_id);
         return $this->db->resultSet();
     }
