@@ -18,7 +18,9 @@ class StudentEnrollment {
     }
 
     public function getByCourse($course_id) {
-        $this->db->query("SELECT student_enrollments.*, users.full_name FROM student_enrollments JOIN users ON student_enrollments.student_id = users.id WHERE course_id = :course_id");
+        // Return user information for students enrolled in the course. Alias user's id as id
+        // so views that expect $student->id to be the user id will work correctly.
+        $this->db->query("SELECT users.id as id, users.full_name, users.email FROM student_enrollments JOIN users ON student_enrollments.student_id = users.id WHERE student_enrollments.course_id = :course_id");
         $this->db->bind(':course_id', $course_id);
         return $this->db->resultSet();
     }
@@ -28,6 +30,14 @@ class StudentEnrollment {
         $this->db->bind(':student_id', $data['student_id']);
         $this->db->bind(':course_id', $data['course_id']);
         $this->db->bind(':enrollment_date', $data['enrollment_date']);
+        return $this->db->execute();
+    }
+
+    public function enrollStudent($student_id, $course_id) {
+        $this->db->query("INSERT INTO student_enrollments (student_id, course_id, enrollment_date) VALUES (:student_id, :course_id, :enrollment_date)");
+        $this->db->bind(':student_id', $student_id);
+        $this->db->bind(':course_id', $course_id);
+        $this->db->bind(':enrollment_date', date('Y-m-d'));
         return $this->db->execute();
     }
 
@@ -47,5 +57,25 @@ class StudentEnrollment {
             }
         }
         return $count;
+    }
+
+    public function isStudentEnrolled($student_id, $course_id) {
+        $this->db->query("SELECT COUNT(*) as count FROM student_enrollments WHERE student_id = :student_id AND course_id = :course_id");
+        $this->db->bind(':student_id', $student_id);
+        $this->db->bind(':course_id', $course_id);
+        $row = $this->db->single();
+        return $row->count > 0;
+    }
+
+    public function getStudentsBySchedule($schedule_id) {
+        $this->db->query("
+            SELECT u.id, u.full_name, u.email 
+            FROM users u
+            JOIN student_enrollments se ON u.id = se.student_id
+            JOIN schedules s ON se.course_id = (SELECT course_id FROM units WHERE id = s.unit_id)
+            WHERE s.id = :schedule_id
+        ");
+        $this->db->bind(':schedule_id', $schedule_id);
+        return $this->db->resultSet();
     }
 }
