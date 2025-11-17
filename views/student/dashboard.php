@@ -16,20 +16,73 @@
                 <div class="card">
                     <div class="card-header">Attendance Overview</div>
                     <div class="card-body">
-                        <p>Overall Attendance: <?php echo $data['overall_attendance_percentage']; ?>%</p>
-                        <?php if (!empty($data['units_below_threshold'])): ?>
-                            <div class="alert alert-warning mt-2">
-                                <strong>Warning!</strong> Your attendance is below threshold in:
-                                <ul>
-                                    <?php foreach ($data['units_below_threshold'] as $unitName): ?>
-                                        <li><?php echo $unitName; ?></li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            </div>
-                        <?php endif; ?>
+                        <canvas id="studentAttendanceChart"></canvas>
+                        <a href="<?php echo BASE_URL; ?>student/myattendance/scan_qr" class="btn btn-primary mt-3">Scan QR Code</a>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <script>
+            const studentCtx = document.getElementById('studentAttendanceChart').getContext('2d');
+            let studentAttendanceChart;
+
+            function createStudentChart(data) {
+                if (studentAttendanceChart) {
+                    studentAttendanceChart.destroy();
+                }
+
+                const labels = data.map(item => item.date);
+                const presentData = data.map(item => item.present_rate);
+                const absentData = data.map(item => item.absent_rate);
+                const excusedData = data.map(item => item.excused_rate);
+
+                studentAttendanceChart = new Chart(studentCtx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Present Rate',
+                            data: presentData,
+                            backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                            borderColor: 'rgba(40, 167, 69, 1)',
+                            borderWidth: 1
+                        }, {
+                            label: 'Absent Rate',
+                            data: absentData,
+                            backgroundColor: 'rgba(220, 53, 69, 0.2)',
+                            borderColor: 'rgba(220, 53, 69, 1)',
+                            borderWidth: 1
+                        }, {
+                            label: 'Excused Rate',
+                            data: excusedData,
+                            backgroundColor: 'rgba(255, 193, 7, 0.2)',
+                            borderColor: 'rgba(255, 193, 7, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Fetch data and create chart on page load
+            fetch(`<?php echo BASE_URL; ?>student/dashboard/getAttendanceData`)
+                .then(response => response.json())
+                .then(data => {
+                    createStudentChart(data);
+                });
+        </script>
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">Upcoming Classes</div>

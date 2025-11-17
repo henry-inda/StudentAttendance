@@ -45,6 +45,19 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Attendance Overview</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="start_date" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="start_date" value="<?php echo date('Y-m-d', strtotime('-7 days')); ?>">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="end_date" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="end_date" value="<?php echo date('Y-m-d'); ?>">
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button class="btn btn-primary" id="update_chart">Update Chart</button>
+                            </div>
+                        </div>
                         <canvas id="attendanceChart"></canvas>
                     </div>
                 </div>
@@ -102,24 +115,70 @@
 
 <script>
     const ctx = document.getElementById('attendanceChart').getContext('2d');
-    const attendanceChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-            datasets: [{
-                label: 'Attendance Rate',
-                data: [80, 92, 90, 85, 95, 93, 98],
-                backgroundColor: 'rgba(15, 76, 117, 0.2)',
-                borderColor: 'rgba(15, 76, 117, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+    let attendanceChart;
+
+    function createChart(data) {
+        if (attendanceChart) {
+            attendanceChart.destroy();
+        }
+
+        const labels = data.map(item => item.date);
+        const presentData = data.map(item => item.present_rate);
+        const absentData = data.map(item => item.absent_rate);
+        const excusedData = data.map(item => item.excused_rate);
+
+        attendanceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Present Rate',
+                    data: presentData,
+                    backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Absent Rate',
+                    data: absentData,
+                    backgroundColor: 'rgba(220, 53, 69, 0.2)',
+                    borderColor: 'rgba(220, 53, 69, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Excused Rate',
+                    data: excusedData,
+                    backgroundColor: 'rgba(255, 193, 7, 0.2)',
+                    borderColor: 'rgba(255, 193, 7, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%'
+                            }
+                        }
+                    }
                 }
             }
-        }
-    });
+        });
+    }
+
+    function updateChart() {
+        const startDate = document.getElementById('start_date').value;
+        const endDate = document.getElementById('end_date').value;
+
+        fetch(`<?php echo BASE_URL; ?>admin/dashboard/getAttendanceOverviewData?start_date=${startDate}&end_date=${endDate}`)
+            .then(response => response.json())
+            .then(data => {
+                createChart(data);
+            });
+    }
+
+    document.getElementById('update_chart').addEventListener('click', updateChart);
+
+    // Initial chart load
+    createChart(<?php echo json_encode($data['attendance_overview']); ?>);
 </script>
