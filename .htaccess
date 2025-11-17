@@ -2,7 +2,5 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^favicon\.ico$ favicon/favicon.ico [L]
-RewriteRule ^student/myattendance/mark_by_qr/(.*)$ http://localhost:8000/student/myattendance/mark_by_qr/$1 [P,L,E=RULE:1]
-Header set X-Rewrite-Rule "1" env=RULE
 RewriteRule ^(.*)$ index.php?url=$1 [QSA,L,E=RULE:2]
 Header set X-Rewrite-Rule "2" env=RULE
