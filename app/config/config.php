@@ -27,3 +27,6 @@ define('SESSION_NAME', 'student_attendance');
 
 // Timezone
 date_default_timezone_set('Africa/Nairobi');
+
+// JWT Secret
+define('JWT_SECRET', '62f50ec288db76a72bf88d286178128641ba260218e8bd465979bb20fdbabbfb');
