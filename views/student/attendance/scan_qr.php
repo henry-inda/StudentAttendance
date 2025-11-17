@@ -17,8 +17,12 @@
 <script src="<?php echo BASE_URL; ?>assets/js/html5-qrcode.min.js"></script>
 <script>
     function onScanSuccess(decodedText, decodedResult) {
+        console.log("Decoded QR Code Text:", decodedText); // Debugging line
+        // construct the full URL
+        var fullUrl = "<?php echo BASE_URL; ?>student/myattendance/mark_by_qr/" + decodedText;
+        console.log("Full URL:", fullUrl); // Debugging line
         // redirect to the decoded URL
-        window.location.href = decodedText;
+        window.location.href = fullUrl;
     }
 
     var html5QrcodeScanner = new Html5QrcodeScanner(

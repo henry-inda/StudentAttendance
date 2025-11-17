@@ -208,7 +208,7 @@ class Attendance extends Controller {
         // Generate QR code
         $result = Endroid\QrCode\Builder\Builder::create()
             ->writer(new Endroid\QrCode\Writer\PngWriter())
-            ->data(BASE_URL . 'student/myattendance/mark_by_qr/' . $jwt)
+            ->data($jwt)
             ->size(300)
             ->margin(10)
             ->build();
