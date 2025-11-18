@@ -78,4 +78,27 @@ class StudentEnrollment {
         $this->db->bind(':schedule_id', $schedule_id);
         return $this->db->resultSet();
     }
+
+    // New methods for student_unit_enrollments
+    public function enrollStudentInUnit($student_id, $unit_id) {
+        $this->db->query("INSERT INTO student_unit_enrollments (student_id, unit_id, enrollment_date) VALUES (:student_id, :unit_id, :enrollment_date)");
+        $this->db->bind(':student_id', $student_id);
+        $this->db->bind(':unit_id', $unit_id);
+        $this->db->bind(':enrollment_date', date('Y-m-d'));
+        return $this->db->execute();
+    }
+
+    public function isStudentEnrolledInUnit($student_id, $unit_id) {
+        $this->db->query("SELECT COUNT(*) as count FROM student_unit_enrollments WHERE student_id = :student_id AND unit_id = :unit_id");
+        $this->db->bind(':student_id', $student_id);
+        $this->db->bind(':unit_id', $unit_id);
+        $row = $this->db->single();
+        return $row->count > 0;
+    }
+
+    public function getUnitsByStudent($student_id) {
+        $this->db->query("SELECT sue.*, u.unit_name, u.unit_code FROM student_unit_enrollments sue JOIN units u ON sue.unit_id = u.id WHERE sue.student_id = :student_id");
+        $this->db->bind(':student_id', $student_id);
+        return $this->db->resultSet();
+    }
 }

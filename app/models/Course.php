@@ -41,9 +41,22 @@ class Course {
         return $this->db->execute();
     }
 
+    public function findByName($name) {
+        $this->db->query("SELECT * FROM courses WHERE course_name = :name");
+        $this->db->bind(':name', $name);
+        return $this->db->single();
+    }
+
     public function delete($id) {
         $this->db->query("DELETE FROM courses WHERE id = :id");
         $this->db->bind(':id', $id);
         return $this->db->execute();
+    }
+
+    public function getUnitsByCourseAndSemester($course_id, $semester) {
+        $this->db->query("SELECT * FROM units WHERE course_id = :course_id AND semester = :semester");
+        $this->db->bind(':course_id', $course_id);
+        $this->db->bind(':semester', $semester);
+        return $this->db->resultSet();
     }
 }
