@@ -6,6 +6,68 @@ class AttendanceModel {
         $this->db = Database::getInstance();
     }
 
+    public function getOverallAttendancePercentage($student_id) {
+        $this->db->query("
+            SELECT 
+                COUNT(id) as total_classes,
+                SUM(CASE WHEN status = 'present' THEN 1 ELSE 0 END) as present_count
+            FROM attendance
+            WHERE student_id = :student_id
+        ");
+        $this->db->bind(':student_id', $student_id);
+        $stats = $this->db->single();
+
+        if ($stats && $stats->total_classes > 0) {
+            return round(($stats->present_count / $stats->total_classes) * 100, 2);
+        } else {
+            return 0;
+        }
+    }
+
+    public function getUnitsBelowThreshold($student_id, $threshold) {
+        $this->db->query("
+            SELECT u.id AS unit_id, u.unit_name, u.unit_code
+            FROM units u
+            JOIN courses c ON u.course_id = c.id
+            JOIN student_enrollments se ON c.id = se.course_id
+            WHERE se.student_id = :student_id AND se.status = 'enrolled'
+        ");
+        $this->db->bind(':student_id', $student_id);
+        $units = $this->db->resultSet();
+
+        $unitsBelowThreshold = [];
+        foreach ($units as $unit) {
+            $attendancePercentage = $this->getAttendancePercentageForStudentAndUnit($student_id, $unit->unit_id);
+            if ($attendancePercentage < $threshold) {
+                $unit->attendance_percentage = $attendancePercentage;
+                $unitsBelowThreshold[] = $unit;
+            }
+        }
+
+        return $unitsBelowThreshold;
+    }
+
+    public function getEnrolledUnitsWithAttendance($student_id) {
+        $this->db->query("
+            SELECT u.id AS unit_id, u.unit_name, u.unit_code
+            FROM units u
+            JOIN courses c ON u.course_id = c.id
+            JOIN student_enrollments se ON c.id = se.course_id
+            WHERE se.student_id = :student_id AND se.status = 'enrolled'
+        ");
+        $this->db->bind(':student_id', $student_id);
+        $units = $this->db->resultSet();
+
+        foreach ($units as $unit) {
+            $stats = $this->getUnitAttendanceStatsForStudent($student_id, $unit->unit_id);
+            $unit->attendance_percentage = $stats->percentage;
+            $unit->present_count = $stats->present_count;
+            $unit->total_classes = $stats->total_classes;
+        }
+
+        return $units;
+    }
+
     public function getBySchedule($schedule_id, $date) {
         $this->db->query("SELECT attendance.*, users.full_name as student_name FROM attendance JOIN users ON attendance.student_id = users.id WHERE schedule_id = :schedule_id AND date = :date");
         $this->db->bind(':schedule_id', $schedule_id);
@@ -128,5 +190,63 @@ class AttendanceModel {
         }
 
         return ['labels' => $labels, 'data' => $data];
+    }
+
+    public function getByScheduleAndStudent($schedule_id, $student_id, $date) {
+        $this->db->query("SELECT * FROM attendance WHERE schedule_id = :schedule_id AND student_id = :student_id AND date = :date");
+        $this->db->bind(':schedule_id', $schedule_id);
+        $this->db->bind(':student_id', $student_id);
+        $this->db->bind(':date', $date);
+        return $this->db->single();
+    }
+
+    public function markAsExcused($student_id, $schedule_id, $date) {
+        // First, check if an attendance record exists for this student, schedule, and date.
+        // If not, we might need to create one as 'excused' (or decide to only update existing ones).
+        // For simplicity now, let's assume one exists and we will update it.
+        // If no record exists, this operation will silently fail on the update step unless we insert.
+        $attendanceRecord = $this->getByScheduleAndStudent($schedule_id, $student_id, $date);
+
+        if ($attendanceRecord) {
+            return $this->updateAttendance($attendanceRecord->id, 'excused');
+        } else {
+            // If no record exists, create one with 'excused' status.
+            $data = [
+                'schedule_id' => $schedule_id,
+                'student_id' => $student_id,
+                'date' => $date,
+                'status' => 'excused',
+                'marked_by' => null, // Assuming no one marked it manually, it's auto-excused
+                'notes' => 'Excused due to approved request'
+            ];
+            return $this->markAttendance($data);
+        }
+    }
+
+    public function getAttendanceByUnit($unit_id) {
+        $this->db->query("
+            SELECT
+                a.id,
+                a.date,
+                a.status,
+                a.notes,
+                u.full_name AS student_name,
+                s.day_of_week,
+                s.start_time,
+                s.end_time,
+                s.venue
+            FROM
+                attendance a
+            JOIN
+                users u ON a.student_id = u.id
+            JOIN
+                schedules s ON a.schedule_id = s.id
+            WHERE
+                s.unit_id = :unit_id
+            ORDER BY
+                a.date DESC, s.start_time ASC, u.full_name ASC;
+        ");
+        $this->db->bind(':unit_id', $unit_id);
+        return $this->db->resultSet();
     }
 }

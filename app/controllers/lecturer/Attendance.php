@@ -177,8 +177,24 @@ class Attendance extends Controller {
     }
 
     public function view_history($unit_id) {
-        // To be implemented
-        $this->view('lecturer/attendance/history');
+        $unitModel = $this->model('Unit');
+        $unit = $unitModel->findById($unit_id);
+
+        if (!$unit) {
+            flash_message('error', 'Unit not found.');
+            redirect('lecturer/attendance');
+            return;
+        }
+
+        $attendance_history = $this->attendanceModel->getAttendanceByUnit($unit_id);
+
+        $data = [
+            'title' => 'Attendance History for ' . $unit->unit_name,
+            'unit' => $unit,
+            'attendance_history' => $attendance_history
+        ];
+
+        $this->view('lecturer/attendance/history', $data);
     }
 
     public function generate_qr($schedule_id) {

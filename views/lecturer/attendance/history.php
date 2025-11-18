@@ -4,41 +4,40 @@
 
 <div class="content">
     <div class="container-fluid">
-        <h2>Attendance History for Unit: <?php echo $data['unit']->unit_name; ?></h2>
-        <p>This page will display the past attendance records for a specific unit.</p>
-        
-        <?php if (!empty($data['attendance_records'])): ?>
+        <h2><?php echo $data['title']; ?></h2>
+
+        <?php if (!empty($data['attendance_history'])): ?>
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Student Name</th>
                         <th>Date</th>
+                        <th>Student Name</th>
+                        <th>Status</th>
                         <th>Time</th>
                         <th>Venue</th>
-                        <th>Status</th>
                         <th>Notes</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($data['attendance_records'] as $record): ?>
+                    <?php foreach ($data['attendance_history'] as $record): ?>
                         <tr>
-                            <td><?php echo $record->student_name; ?></td>
-                            <td><?php echo $record->date; ?></td>
-                            <td><?php echo $record->start_time . ' - ' . $record->end_time; ?></td>
-                            <td><?php echo $record->venue; ?></td>
-                            <td><span class="badge bg-<?php 
-                                if ($record->status == 'present') echo 'success';
-                                elseif ($record->status == 'absent') echo 'danger';
-                                else echo 'info';
-                            ?>"><?php echo $record->status; ?></span></td>
-                            <td><?php echo $record->notes; ?></td>
+                            <td><?php echo htmlspecialchars($record->date); ?></td>
+                            <td><?php echo htmlspecialchars($record->student_name); ?></td>
+                            <td><?php echo htmlspecialchars(ucfirst($record->status)); ?></td>
+                            <td><?php echo htmlspecialchars($record->start_time . ' - ' . $record->end_time); ?></td>
+                            <td><?php echo htmlspecialchars($record->venue); ?></td>
+                            <td><?php echo htmlspecialchars($record->notes); ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
         <?php else: ?>
-            <p>No attendance records found for this unit.</p>
+            <div class="alert alert-info" role="alert">
+                No attendance history found for this unit.
+            </div>
         <?php endif; ?>
+
+        <a href="<?php echo BASE_URL; ?>lecturer/attendance" class="btn btn-secondary">Back to Attendance</a>
     </div>
 </div>
 
