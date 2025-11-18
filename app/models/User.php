@@ -65,8 +65,8 @@ class User {
                 $courseModel = new Course();
                 $studentEnrollmentModel = new StudentEnrollment();
 
-                // Get current semester (assuming a setting 'current_semester' exists)
-                $current_semester = $systemSettingModel->get('current_semester');
+                // Get current semester using the new method
+                $current_semester = $systemSettingModel->getCurrentSemester();
 
                 if ($current_semester) {
                     // Get all units for the student's course in the current semester

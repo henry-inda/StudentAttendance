@@ -29,4 +29,21 @@ class SystemSetting {
         }
         return $settings;
     }
+
+    /**
+     * Automatically determines the current semester based on the current month.
+     * @return string The current semester (e.g., 'JAN/APR', 'MAY/AUG', 'SEP/DEC').
+     */
+    public function getCurrentSemester() {
+        $currentMonth = (int)date('m');
+
+        if ($currentMonth >= 1 && $currentMonth <= 4) { // January to April
+            return 'JAN/APR';
+        } elseif ($currentMonth >= 5 && $currentMonth <= 8) { // May to August
+            return 'MAY/AUG';
+        } elseif ($currentMonth >= 9 && $currentMonth <= 12) { // September to December
+            return 'SEP/DEC';
+        }
+        return 'UNKNOWN'; // Should not happen
+    }
 }
