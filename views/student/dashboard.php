@@ -5,11 +5,7 @@
 <div class="content">
     <div class="container-fluid">
         <h2>Student Dashboard</h2>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Welcome, <?php echo get_session('user_name'); ?>!</h5>
-            </div>
-        </div>
+
 
         <div class="row mt-3">
             <div class="col-md-6">
@@ -21,68 +17,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <script>
-            const studentCtx = document.getElementById('studentAttendanceChart').getContext('2d');
-            let studentAttendanceChart;
-
-            function createStudentChart(data) {
-                if (studentAttendanceChart) {
-                    studentAttendanceChart.destroy();
-                }
-
-                const labels = data.map(item => item.date);
-                const presentData = data.map(item => item.present_rate);
-                const absentData = data.map(item => item.absent_rate);
-                const excusedData = data.map(item => item.excused_rate);
-
-                studentAttendanceChart = new Chart(studentCtx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Present Rate',
-                            data: presentData,
-                            backgroundColor: 'rgba(40, 167, 69, 0.2)',
-                            borderColor: 'rgba(40, 167, 69, 1)',
-                            borderWidth: 1
-                        }, {
-                            label: 'Absent Rate',
-                            data: absentData,
-                            backgroundColor: 'rgba(220, 53, 69, 0.2)',
-                            borderColor: 'rgba(220, 53, 69, 1)',
-                            borderWidth: 1
-                        }, {
-                            label: 'Excused Rate',
-                            data: excusedData,
-                            backgroundColor: 'rgba(255, 193, 7, 0.2)',
-                            borderColor: 'rgba(255, 193, 7, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: function(value) {
-                                        return value + '%'
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Fetch data and create chart on page load
-            fetch(`<?php echo BASE_URL; ?>student/dashboard/getAttendanceData`)
-                .then(response => response.json())
-                .then(data => {
-                    createStudentChart(data);
-                });
-        </script>
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">Upcoming Classes</div>
@@ -112,8 +46,8 @@
                             <ul class="list-group">
                                 <?php foreach ($data['enrolled_units'] as $unit): ?>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <?php echo $unit['unit_name']; ?>
-                                        <span class="badge bg-primary rounded-pill"><?php echo $unit['percentage']; ?>%</span>
+                                        <?php echo $unit->unit_name; ?>
+                                        <span class="badge bg-primary rounded-pill"><?php echo $unit->attendance_percentage; ?>%</span>
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
@@ -147,4 +81,53 @@
     </div>
 </div>
 
+<script>
+    const studentCtx = document.getElementById('studentAttendanceChart').getContext('2d');
+    let studentAttendanceChart;
+
+    function createStudentChart(chartData) { // Renamed data to chartData for clarity
+        if (studentAttendanceChart) {
+            studentAttendanceChart.destroy();
+        }
+
+        studentAttendanceChart = new Chart(studentCtx, {
+            type: 'bar', // Changed to bar chart
+            data: {
+                labels: chartData.labels, // Use labels from new data
+                datasets: [{
+                    label: 'Attendance Percentage',
+                    data: chartData.data, // Use data from new data
+                    backgroundColor: 'rgba(40, 167, 69, 0.6)', // Green for attendance
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100, // Max percentage is 100
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%'
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false // No need for legend with single dataset
+                    }
+                }
+            }
+        });
+    }
+
+    // Fetch data and create chart on page load
+    fetch(`<?php echo BASE_URL; ?>student/dashboard/getUnitAttendanceChartData`) // New URL
+        .then(response => response.json())
+        .then(data => {
+            createStudentChart(data);
+        });
+</script>
 <?php require_once 'views/layouts/footer.php'; ?>
