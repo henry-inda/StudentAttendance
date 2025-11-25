@@ -1,0 +1,26 @@
+email,password,full_name,role,department_id,course_id,phone,status
+student1@example.com,password123,John Doe,student,1,1,1234567890,active
+student2@example.com,password123,Jane Smith,student,1,1,1234567891,active
+student3@example.com,password123,Peter Jones,student,2,2,1234567892,active
+student4@example.com,password123,Mary Williams,student,2,2,1234567893,active
+student5@example.com,password123,David Brown,student,3,3,1234-567894,active
+student6@example.com,password123,Susan Garcia,student,3,3,1234567895,active
+student7@example.com,password123,Michael Miller,student,1,1,1234567896,active
+student8@example.com,password123,Linda Davis,student,2,2,1234567897,active
+student9@example.com,password123,Robert Rodriguez,student,3,3,1234567898,active
+student10@example.com,password123,Patricia Martinez,student,1,1,1234567899,active
+student11@example.com,password123,James Hernandez,student,2,2,1234567900,active
+student12@example.com,password123,Jennifer Lopez,student,3,3,1234567901,active
+student13@example.com,password123,Charles Gonzalez,student,1,1,1234567902,active
+student14@example.com,password123,Barbara Wilson,student,2,2,1234567903,active
+student15@example.com,password123,Thomas Anderson,student,3,3,1234567904,active
+lecturer1@example.com,password123,Dr. William Taylor,lecturer,1,,2345678901,active
+lecturer2@example.com,password123,Dr. Betty Moore,lecturer,2,,2345678902,active
+lecturer3@example.com,password123,Dr. Richard Jackson,lecturer,3,,2345678903,active
+lecturer4@example.com,password123,Dr. Kimberly White,lecturer,1,,2345678904,active
+lecturer5@example.com,password123,Dr. Steven Harris,lecturer,2,,2345678905,active
+lecturer6@example.com,password123,Dr. Donna Martin,lecturer,3,,2345678906,active
+lecturer7@example.com,password123,Dr. George Thompson,lecturer,1,,2345678907,active
+lecturer8@example.com,password123,Dr. Carol Garcia,lecturer,2,,2345678908,active
+lecturer9@example.com,password123,Dr. Edward Martinez,lecturer,3,,2345678909,active
+lecturer10@example.com,password123,Dr. Helen Robinson,lecturer,1,,2345678910,active

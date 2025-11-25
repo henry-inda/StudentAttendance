@@ -1,0 +1,11 @@
+email,password,full_name,role,department_id,course_id,phone,status
+lecturer1@example.com,password123,Dr. William Taylor,lecturer,1,,2345678901,active
+lecturer2@example.com,password123,Dr. Betty Moore,lecturer,2,,2345678902,active
+lecturer3@example.com,password123,Dr. Richard Jackson,lecturer,3,,2345678903,active
+lecturer4@example.com,password123,Dr. Kimberly White,lecturer,1,,2345678904,active
+lecturer5@example.com,password123,Dr. Steven Harris,lecturer,2,,2345678905,active
+lecturer6@example.com,password123,Dr. Donna Martin,lecturer,3,,2345678906,active
+lecturer7@example.com,password123,Dr. George Thompson,lecturer,1,,2345678907,active
+lecturer8@example.com,password123,Dr. Carol Garcia,lecturer,2,,2345678908,active
+lecturer9@example.com,password123,Dr. Edward Martinez,lecturer,3,,2345678909,active
+lecturer10@example.com,password123,Dr. Helen Robinson,lecturer,1,,2345678910,active

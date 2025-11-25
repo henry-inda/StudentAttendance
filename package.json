@@ -1,0 +1,27 @@
+{
+  "name": "studentattendance",
+  "version": "1.0.0",
+  "description": "This project is a full-stack Student Attendance Monitoring System built with PHP, MySQL, Bootstrap, JavaScript, and CSS. It features role-based access for Admin, Lecturer, and Student users. The system includes modules for user management, department, course, and unit management, student enrollments, attendance marking, excuse requests, system settings, logging, and reporting. It utilizes a custom MVC-like framework, PDO for database interaction, and PHPMailer for email notifications.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/henry-inda/StudentAttendance.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/henry-inda/StudentAttendance/issues"
+  },
+  "homepage": "https://github.com/henry-inda/StudentAttendance#readme",
+  "dependencies": {
+    "puppeteer": "^24.30.0"
+  }
+}
