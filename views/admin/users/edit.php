@@ -55,22 +55,41 @@
                         </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label for="department_id" class="form-label">Department</label>
-                        <?php if (isset($data['departments']) && is_array($data['departments'])): ?>
-                            <select class="form-select" id="department_id" name="department_id">
-                                <option value="">Select Department</option>
-                                <?php foreach ($data['departments'] as $dept): ?>
-                                    <option value="<?php echo $dept->id; ?>" 
-                                        <?php echo ($data['user']->department_id == $dept->id) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($dept->name); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        <?php else: ?>
-                            <select class="form-select" id="department_id" name="department_id">
-                                <option value="">No departments available</option>
-                            </select>
+                    <div class="mb-4" id="role_specific_fields">
+                        <?php if ($data['user']->role == 'student'): ?>
+                            <label for="course_id" class="form-label">Course</label>
+                            <?php if (isset($data['courses']) && is_array($data['courses'])): ?>
+                                <select class="form-select" id="course_id" name="course_id">
+                                    <option value="">Select Course</option>
+                                    <?php foreach ($data['courses'] as $course): ?>
+                                        <option value="<?php echo $course->id; ?>" 
+                                            <?php echo ($data['user']->course_id == $course->id) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($course->name); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            <?php else: ?>
+                                <select class="form-select" id="course_id" name="course_id">
+                                    <option value="">No courses available</option>
+                                </select>
+                            <?php endif; ?>
+                        <?php else: // lecturer or admin ?>
+                            <label for="department_id" class="form-label">Department</label>
+                            <?php if (isset($data['departments']) && is_array($data['departments'])): ?>
+                                <select class="form-select" id="department_id" name="department_id">
+                                    <option value="">Select Department</option>
+                                    <?php foreach ($data['departments'] as $dept): ?>
+                                        <option value="<?php echo $dept->id; ?>" 
+                                            <?php echo ($data['user']->department_id == $dept->id) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($dept->name); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            <?php else: ?>
+                                <select class="form-select" id="department_id" name="department_id">
+                                    <option value="">No departments available</option>
+                                </select>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </div>
 
@@ -107,3 +126,79 @@
 </div>
 
 <?php require_once 'views/layouts/footer.php'; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('role');
+    const roleSpecificFieldsDiv = document.getElementById('role_specific_fields');
+
+    // Store the HTML for course and department fields for easy switching
+    const courseHtml = `
+        <label for="course_id" class="form-label">Course</label>
+        <?php if (isset($data['courses']) && is_array($data['courses'])): ?>
+            <select class="form-select" id="course_id" name="course_id">
+                <option value="">Select Course</option>
+                <?php foreach ($data['courses'] as $course): ?>
+                    <option value="<?php echo $course->id; ?>" 
+                        <?php echo ($data['user']->course_id == $course->id) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($course->name); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        <?php else: ?>
+            <select class="form-select" id="course_id" name="course_id">
+                <option value="">No courses available</option>
+            </select>
+        <?php endif; ?>
+    `;
+
+    const departmentHtml = `
+        <label for="department_id" class="form-label">Department</label>
+        <?php if (isset($data['departments']) && is_array($data['departments'])): ?>
+            <select class="form-select" id="department_id" name="department_id">
+                <option value="">Select Department</option>
+                <?php foreach ($data['departments'] as $dept): ?>
+                    <option value="<?php echo $dept->id; ?>" 
+                        <?php echo ($data['user']->department_id == $dept->id) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($dept->name); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        <?php else: ?>
+            <select class="form-select" id="department_id" name="department_id">
+                <option value="">No departments available</option>
+            </select>
+        <?php endif; ?>
+    `;
+
+    function updateRoleSpecificFields() {
+        const selectedRole = roleSelect.value;
+        roleSpecificFieldsDiv.innerHTML = ''; // Clear current content
+
+        let courseField = document.getElementById('course_id');
+        let departmentField = document.getElementById('department_id');
+
+        // Reset names to avoid submitting incorrect fields if they were previously rendered
+        if (courseField) courseField.name = '';
+        if (departmentField) departmentField.name = '';
+
+        if (selectedRole === 'student') {
+            roleSpecificFieldsDiv.innerHTML = courseHtml;
+            document.getElementById('course_id').name = 'course_id';
+            // Ensure department_id is not submitted for students
+            if (departmentField) departmentField.name = '';
+        } else if (selectedRole === 'lecturer' || selectedRole === 'admin') {
+            roleSpecificFieldsDiv.innerHTML = departmentHtml;
+            document.getElementById('department_id').name = 'department_id';
+            // Ensure course_id is not submitted for lecturers/admins
+            if (courseField) courseField.name = '';
+        }
+    }
+
+    // Initial call to set the correct fields based on the loaded user's role
+    updateRoleSpecificFields();
+
+    // Listen for changes on the role select
+    roleSelect.addEventListener('change', updateRoleSpecificFields);
+});
+</script>

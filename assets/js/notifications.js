@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const listItem = document.createElement('li');
                     const link = document.createElement('a');
                     link.className = 'dropdown-item';
-                    link.href = BASE_URL + 'notifications/view/' + notification.id;
+                    link.href = notification.link;
                     link.textContent = notification.title;
                     listItem.appendChild(link);
                     if (notificationMenu) {
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
         toast.addEventListener('click', function(e) {
             // Prevent closing if clicking the close button
             if (e.target.classList.contains('btn-close')) return;
-            window.location.href = BASE_URL + 'notifications';
+            window.location.href = notification.link;
         });
 
         const toastContainer = document.querySelector('.toast-container');

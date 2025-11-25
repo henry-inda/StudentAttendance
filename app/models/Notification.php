@@ -20,8 +20,39 @@ class Notification {
         if ($limit !== null) {
             $this->db->bind(':limit', $limit, PDO::PARAM_INT);
         }
-        return $this->db->resultSet();
+        
+        $results = $this->db->resultSet();
+        // Add the generated link to each notification
+        foreach ($results as $row) {
+            $row->link = $this->generateLink($row);
+        }
+        return $results;
     }
+
+    public function generateLink($notification) {
+        $link = '#'; // Default link
+        $related_id = isset($notification->related_id) ? $notification->related_id : null;
+
+        switch ($notification->type) {
+            case 'account_request':
+                // Link to the admin page for viewing a specific request
+                $link = 'admin/requests/show/' . $notification->id . '/' . $related_id;
+                break;
+            case 'excuse_request':
+                // Link to the lecturer page for viewing a specific excuse request
+                $link = 'lecturer/excuse_requests/view/' . $related_id;
+                break;
+            case 'new_unit_enrolment':
+                // Link to the course details page
+                $link = 'student/courses/view/' . $related_id;
+                break;
+            // Add other cases as needed
+        }
+
+        // Return a full URL
+        return BASE_URL . $link;
+    }
+
 
     public function createNotification($user_id, $type, $title, $message, $related_id = null) {
         return $this->create($user_id, $type, $title, $message, $related_id);

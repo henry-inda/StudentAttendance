@@ -108,7 +108,7 @@ class User {
     public function update($data) {
         // Start building the query
         $sql = 'UPDATE users SET full_name = :full_name, email = :email, role = :role, 
-                department_id = :department_id, phone = :phone, status = :status';
+                department_id = :department_id, course_id = :course_id, phone = :phone, status = :status';
         
         // Add password to query if it's being updated
         if (!empty($data['password'])) {
@@ -125,6 +125,7 @@ class User {
         $this->db->bind(':email', $data['email']);
         $this->db->bind(':role', $data['role']);
         $this->db->bind(':department_id', $data['department_id']);
+        $this->db->bind(':course_id', $data['course_id']);
         $this->db->bind(':phone', $data['phone']);
         $this->db->bind(':status', $data['status']);
         

@@ -9,10 +9,12 @@ class Users extends Controller {
     }
 
     public function index() {
-        $users = $this->userModel->getByRole('student'); // Default to students
+        $students = $this->userModel->getByRole('student');
+        $lecturers = $this->userModel->getByRole('lecturer');
         $data = [
             'title' => 'Users Management',
-            'users' => $users
+            'students' => $students,
+            'lecturers' => $lecturers
         ];
         $this->view('admin/users/index', $data);
     }
@@ -75,10 +77,18 @@ class Users extends Controller {
                 'full_name' => trim($_POST['full_name']),
                 'email' => trim($_POST['email']),
                 'role' => trim($_POST['role']),
-                'department_id' => isset($_POST['department_id']) ? trim($_POST['department_id']) : null,
                 'phone' => isset($_POST['phone']) ? trim($_POST['phone']) : null,
                 'status' => trim($_POST['status'])
             ];
+
+            // Conditionally set department_id or course_id based on role
+            if ($data['role'] == 'student') {
+                $data['course_id'] = isset($_POST['course_id']) ? trim($_POST['course_id']) : null;
+                $data['department_id'] = null;
+            } else {
+                $data['department_id'] = isset($_POST['department_id']) ? trim($_POST['department_id']) : null;
+                $data['course_id'] = null;
+            }
 
             // Optional password update
             if (!empty($_POST['password'])) {
@@ -131,13 +141,17 @@ class Users extends Controller {
                 return;
             }
 
-            // Load departments
+            // Load departments and courses
             $deptModel = $this->model('Department');
             $departments = $deptModel->getAll();
             
+            $courseModel = $this->model('Course');
+            $courses = $courseModel->getAll();
+            
             $data = [
                 'user' => $user,
-                'departments' => $departments
+                'departments' => $departments,
+                'courses' => $courses
             ];
             $this->view('admin/users/edit', $data);
         }

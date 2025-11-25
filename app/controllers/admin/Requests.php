@@ -75,10 +75,6 @@ class Requests extends Controller {
             }
 
             if ($this->userModel->create($data)) {
-                $user_id = $this->userModel->getLastInsertedId();
-                if ($request->role == 'student') {
-                    $this->model('StudentEnrollment')->enrollStudent($user_id, $data['course_id']);
-                }
                 $this->accountRequestModel->approveRequest($id);
 
                 // Log activity

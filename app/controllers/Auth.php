@@ -164,7 +164,7 @@ class Auth extends Controller {
                     send_email($admin_email, $subject, $body);
 
                     // Create notification for admin
-                    $this->model('Notification')->createNotification($admins[0]->id, 'new_request', 'New Account Request', 'A new account request has been submitted.', $request_id);
+                    $this->model('Notification')->createNotification($admins[0]->id, 'account_request', 'New Account Request', 'A new account request has been submitted.', $request_id);
                 }
 
                 flash_message('request_success', 'Your account request has been submitted successfully. You will receive an email once it is approved.');
