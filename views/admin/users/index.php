@@ -42,7 +42,7 @@
                             <td><?php echo htmlspecialchars($user->full_name); ?></td>
                             <td><?php echo htmlspecialchars($user->email); ?></td>
                             <td><?php echo htmlspecialchars($user->role); ?></td>
-                            <td><?php echo htmlspecialchars($user->course_id); ?></td>
+                            <td><?php echo htmlspecialchars($user->course_id ?? ''); ?></td>
                             <td><span class="badge bg-success"><?php echo htmlspecialchars($user->status); ?></span></td>
                             <td>
                                 <a href="<?php echo BASE_URL; ?>admin/users/edit/<?php echo $user->id; ?>" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Edit"><i class="fas fa-edit"></i></a>
@@ -73,7 +73,7 @@
                             <td><?php echo htmlspecialchars($user->full_name); ?></td>
                             <td><?php echo htmlspecialchars($user->email); ?></td>
                             <td><?php echo htmlspecialchars($user->role); ?></td>
-                            <td><?php echo htmlspecialchars($user->department_id); ?></td>
+                            <td><?php echo htmlspecialchars($user->department_id ?? ''); ?></td>
                             <td><span class="badge bg-success"><?php echo htmlspecialchars($user->status); ?></span></td>
                             <td>
                                 <a href="<?php echo BASE_URL; ?>admin/users/edit/<?php echo $user->id; ?>" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Edit"><i class="fas fa-edit"></i></a>
