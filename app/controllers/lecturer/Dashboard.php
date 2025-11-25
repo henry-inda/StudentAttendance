@@ -1,5 +1,9 @@
 <?php
 class Dashboard extends Controller {
+    private $scheduleModel;
+    private $unitModel;
+    private $excuseRequestModel;
+
     public function __construct() {
         require_once 'app/helpers/auth_middleware.php';
         check_role(['lecturer']);

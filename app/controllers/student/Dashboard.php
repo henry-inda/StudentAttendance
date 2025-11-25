@@ -1,5 +1,12 @@
 <?php
 class Dashboard extends Controller {
+    private $userModel;
+    private $attendanceModel;
+    private $scheduleModel;
+    private $reportModel;
+    private $systemSettingModel;
+    private $notificationModel;
+
     public function __construct() {
         require_once 'app/helpers/auth_middleware.php';
         check_role(['student']);
