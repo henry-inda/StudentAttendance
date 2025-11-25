@@ -1,10 +1,13 @@
-<div class="sidebar" style="background-color: rgb(15, 76, 117);">
+<div class="sidebar">
     <ul class="nav flex-column">
         <li class="nav-item">
             <a class="nav-link active" href="<?php echo BASE_URL; ?>admin/dashboard"><i class="fas fa-home"></i> Dashboard</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="<?php echo BASE_URL; ?>admin/users"><i class="fas fa-users"></i> Users Management</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="<?php echo BASE_URL; ?>admin/requests"><i class="fas fa-user-plus"></i> Account Requests</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="<?php echo BASE_URL; ?>admin/departments"><i class="fas fa-building"></i> Departments</a>
@@ -26,6 +29,14 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" href="<?php echo BASE_URL; ?>admin/logs"><i class="fas fa-file-text"></i> System Logs</a>
+        </li>
+    </ul>
+    <ul class="nav flex-column mt-auto d-lg-none">
+        <li class="nav-item">
+            <a class="nav-link" href="<?php echo BASE_URL; ?>profile"><i class="fas fa-user"></i> Profile</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="<?php echo BASE_URL; ?>auth/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </li>
     </ul>
 </div>

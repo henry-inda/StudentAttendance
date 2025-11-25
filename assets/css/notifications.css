@@ -1,0 +1,28 @@
+.notifications-list {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.notification-card {
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.notification-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+.notification-card.border-primary {
+    border-width: 0 0 0 4px !important;
+}

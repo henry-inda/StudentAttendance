@@ -1,5 +1,9 @@
 <?php
 class ExcuseRequests extends Controller {
+    private $excuseRequestModel;
+    private $attendanceModel;
+    private $scheduleModel;
+
     public function __construct() {
         require_once 'app/helpers/auth_middleware.php';
         check_role(['lecturer']);
@@ -28,17 +32,41 @@ class ExcuseRequests extends Controller {
 
     public function approve($id) {
         if ($this->excuseRequestModel->updateStatus($id, 'approved', get_session('user_id'))) {
-            // Update attendance record to excused
+            // Get excuse request details
             $excuseRequest = $this->excuseRequestModel->findById($id);
-            // Assuming there's an attendance record to update based on schedule_id and date
-            // This part needs more specific logic to find and update the correct attendance entry
-            // For now, we'll just redirect
+            
+            // Mark student as excused in attendance
+            if ($excuseRequest) {
+                $this->attendanceModel->markAsExcused($excuseRequest->student_id, $excuseRequest->schedule_id, $excuseRequest->date);
+            }
+            
+            // Send WebSocket notification
+            require_once APP . '/helpers/websocket_helper.php';
+            WebSocketNotifier::getInstance()->notify([
+                'type' => 'excuse_response',
+                'studentId' => $excuseRequest->student_id,
+                'excuseId' => $id,
+                'status' => 'approved',
+                'message' => 'Your excuse request has been approved'
+            ]);
             redirect('lecturer/excuseRequests');
         }
     }
 
     public function reject($id) {
         if ($this->excuseRequestModel->updateStatus($id, 'rejected', get_session('user_id'))) {
+            // Get excuse request details
+            $excuseRequest = $this->excuseRequestModel->findById($id);
+            
+            // Send WebSocket notification
+            require_once APP . '/helpers/websocket_helper.php';
+            WebSocketNotifier::getInstance()->notify([
+                'type' => 'excuse_response',
+                'studentId' => $excuseRequest->student_id,
+                'excuseId' => $id,
+                'status' => 'rejected',
+                'message' => 'Your excuse request has been rejected'
+            ]);
             redirect('lecturer/excuseRequests');
         }
     }

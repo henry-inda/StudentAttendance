@@ -23,12 +23,18 @@ class Notification {
         return $this->db->resultSet();
     }
 
-    public function create($user_id, $type, $title, $message) {
-        $this->db->query("INSERT INTO notifications (user_id, type, title, message) VALUES (:user_id, :type, :title, :message)");
+    public function createNotification($user_id, $type, $title, $message, $related_id = null) {
+        return $this->create($user_id, $type, $title, $message, $related_id);
+    }
+
+    public function create($user_id, $type, $title, $message, $related_id = null) {
+        $this->db->query("INSERT INTO notifications (user_id, type, title, message, related_id) 
+                         VALUES (:user_id, :type, :title, :message, :related_id)");
         $this->db->bind(':user_id', $user_id);
         $this->db->bind(':type', $type);
         $this->db->bind(':title', $title);
         $this->db->bind(':message', $message);
+        $this->db->bind(':related_id', $related_id);
         return $this->db->execute();
     }
 
@@ -49,5 +55,9 @@ class Notification {
         $this->db->bind(':user_id', $user_id);
         $row = $this->db->single();
         return $row ? $row->count : 0;
+    }
+
+    public function getRecentNotifications($user_id, $limit = 5) {
+        return $this->getByUser($user_id, false, $limit);
     }
 }

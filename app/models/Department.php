@@ -35,6 +35,12 @@ class Department {
         return $this->db->execute();
     }
 
+    public function findByName($name) {
+        $this->db->query("SELECT * FROM departments WHERE name = :name");
+        $this->db->bind(':name', $name);
+        return $this->db->single();
+    }
+
     public function delete($id) {
         $this->db->query("DELETE FROM departments WHERE id = :id");
         $this->db->bind(':id', $id);

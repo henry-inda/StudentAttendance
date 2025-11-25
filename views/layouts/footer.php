@@ -39,6 +39,15 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+
+    // Add CSRF token to all forms
+    document.querySelectorAll('form').forEach(form => {
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrf_token';
+        csrfInput.value = '<?php echo $_SESSION['csrf_token'] ?? ''; ?>'; // Get token from PHP session
+        form.appendChild(csrfInput);
+    });
 });</script>
 </body>
 </html>

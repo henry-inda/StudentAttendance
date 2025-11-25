@@ -26,8 +26,8 @@
                     <td><?php echo $department->description; ?></td>
                     <td><span class="badge bg-success"><?php echo $department->status; ?></span></td>
                     <td>
-                        <a href="<?php echo BASE_URL; ?>admin/departments/edit/<?php echo $department->id; ?>" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
-                        <a href="<?php echo BASE_URL; ?>admin/departments/delete/<?php echo $department->id; ?>" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+                        <a href="<?php echo BASE_URL; ?>admin/departments/edit/<?php echo $department->id; ?>" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Edit"><i class="fas fa-edit"></i></a>
+                        <a href="<?php echo BASE_URL; ?>admin/departments/delete/<?php echo $department->id; ?>" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Delete" data-confirm="Are you sure you want to delete this department?"><i class="fas fa-trash"></i></a>
                     </td>
                 </tr>
                 <?php endforeach; ?>

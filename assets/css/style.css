@@ -103,3 +103,33 @@ a:hover {
         transform: rotate(360deg);
     }
 }
+
+/* --- UI Enhancements --- */
+
+/* Smooth transitions for interactive elements */
+a, .btn, .card, .form-control, .nav-link {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Add a subtle shadow on hover to cards for a "lift" effect */
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Style for focused form inputs */
+.form-control:focus {
+    border-color: var(--secondary);
+    box-shadow: 0 0 0 0.25rem rgba(80, 130, 184, 0.25);
+}
+
+/* Style for active sidebar links */
+.sidebar .nav-link.active {
+    background-color: var(--primary);
+    color: #fff;
+}
+
+.sidebar .nav-link:hover {
+    background-color: var(--secondary);
+    color: #fff;
+}

@@ -1,11 +1,15 @@
 <?php
 class Auth extends Controller {
+    private $userModel;
+    private $accountRequestModel;
+
     public function __construct() {
         // Helpers are not automatically loaded, so we need to require them
         require_once 'app/helpers/session_helper.php';
         require_once 'app/helpers/auth_middleware.php';
         require_once 'app/helpers/email_helper.php';
         $this->userModel = $this->model('User');
+        $this->accountRequestModel = $this->model('AccountRequest');
     }
 
     public function login() {
@@ -72,6 +76,8 @@ class Auth extends Controller {
         $_SESSION['user_name'] = $user->full_name;
         $_SESSION['user_role'] = $user->role;
         
+        session_write_close(); // Write session data and close the session
+        
         // Redirect based on role
         switch($user->role) {
             case 'admin':
@@ -101,6 +107,75 @@ class Auth extends Controller {
         destroy_session();
         header('Location: ' . BASE_URL . 'auth/login');
         exit;
+    }
+
+    public function request_account() {
+        $courseModel = $this->model('Course');
+        $departmentModel = $this->model('Department');
+
+        $courses = $courseModel->getAll();
+        $departments = $departmentModel->getAll();
+
+        $data = [
+            'courses' => $courses,
+            'departments' => $departments
+        ];
+
+        $this->view('auth/request_account', $data);
+    }
+
+    public function submit_request() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+
+            $data = [
+                'full_name' => trim($_POST['full_name']),
+                'email' => trim($_POST['email']),
+                'role' => trim($_POST['role']),
+                'reg_number' => isset($_POST['reg_number']) ? trim($_POST['reg_number']) : null,
+                'course' => isset($_POST['course']) ? trim($_POST['course']) : null,
+                'employee_id' => isset($_POST['employee_id']) ? trim($_POST['employee_id']) : null,
+                'department' => isset($_POST['department']) ? trim($_POST['department']) : null,
+            ];
+
+            // Check if user already exists
+            if ($this->userModel->findByEmail($data['email'])) {
+                flash_message('request_fail', 'A user with this email address already exists. Please login.');
+                header('Location: ' . BASE_URL . 'auth/request_account');
+                exit;
+            }
+
+            // Check if a pending request already exists
+            if ($this->accountRequestModel->findPendingByEmail($data['email'])) {
+                flash_message('request_fail', 'An account request for this email address is already pending.');
+                header('Location: ' . BASE_URL . 'auth/request_account');
+                exit;
+            }
+
+            if ($this->accountRequestModel->createRequest($data)) {
+                $request_id = $this->accountRequestModel->getLastInsertedId();
+                // Send email to admin
+                $admins = $this->userModel->getByRole('admin');
+                if (!empty($admins)) {
+                    $admin_email = $admins[0]->email;
+                    $subject = 'New Account Request';
+                    $login_link = BASE_URL . 'auth/login';
+                    $body = 'A new account request has been submitted. Please <a href="' . $login_link . '">login</a> to the admin panel to review it.';
+                    send_email($admin_email, $subject, $body);
+
+                    // Create notification for admin
+                    $this->model('Notification')->createNotification($admins[0]->id, 'new_request', 'New Account Request', 'A new account request has been submitted.', $request_id);
+                }
+
+                flash_message('request_success', 'Your account request has been submitted successfully. You will receive an email once it is approved.');
+                header('Location: ' . BASE_URL . 'auth/request_account');
+                exit;
+            } else {
+                flash_message('request_fail', 'Failed to submit your account request. Please try again.');
+                header('Location: ' . BASE_URL . 'auth/request_account');
+                exit;
+            }
+        }
     }
 
     public function forgot_password() {

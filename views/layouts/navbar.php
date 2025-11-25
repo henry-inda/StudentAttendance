@@ -3,29 +3,34 @@
         <button class="navbar-toggler" type="button" id="sidebar-toggle">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <a class="navbar-brand" href="<?php echo BASE_URL; ?>"><i class="fas fa-graduation-cap"></i> Student Attendance</a>
+        <?php
+            // Default brand link
+            $brandHref = BASE_URL;
+            // If user is logged in, point brand to their dashboard based on role
+            if (get_session('user_id')) {
+                $role = get_session('user_role');
+                if ($role === 'admin') {
+                    $brandHref = BASE_URL . 'admin/dashboard';
+                } elseif ($role === 'lecturer') {
+                    $brandHref = BASE_URL . 'lecturer/dashboard';
+                } elseif ($role === 'student') {
+                    $brandHref = BASE_URL . 'student/dashboard';
+                }
+            }
+        ?>
+        <a class="navbar-brand" href="<?php echo $brandHref; ?>"><i class="fas fa-graduation-cap"></i> Student Attendance</a>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-bell"></i>
-                        <?php if ($data['unread_notification_count'] > 0): ?>
-                            <span class="badge bg-danger"><?php echo $data['unread_notification_count']; ?></span>
-                        <?php endif; ?>
+                        <span class="badge bg-danger" id="notification-badge" style="display: none;"></span>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown">
-                        <?php if (!empty($data['recent_notifications'])): ?>
-                            <?php foreach ($data['recent_notifications'] as $notification): ?>
-                                <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>notifications/view/<?php echo $notification->id; ?>"><?php echo $notification->title; ?></a></li>
-                            <?php endforeach; ?>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="<?php echo BASE_URL; ?>notifications">View all</a></li>
-                        <?php else: ?>
-                            <li><a class="dropdown-item" href="#">No new notifications</a></li>
-                        <?php endif; ?>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" id="notification-menu">
+                        <li><a class="dropdown-item" href="#">No new notifications</a></li>
                     </ul>
                 </li>
-                <li class="nav-item dropdown">
+                <li class="nav-item dropdown d-none d-lg-block">
                     <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-user"></i> <?php echo get_session('user_name'); ?>
                     </a>
@@ -40,3 +45,6 @@
         </div>
     </div>
 </nav>
+
+<!-- Toast container for real-time notifications -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1500;"></div>

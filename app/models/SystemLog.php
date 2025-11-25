@@ -11,6 +11,10 @@ class SystemLog {
         return $this->db->resultSet();
     }
 
+    public function logActivity($user_id, $action, $details, $ip) {
+        return $this->log($user_id, $action, $details, $ip);
+    }
+
     public function log($user_id, $action, $details, $ip) {
         $this->db->query("INSERT INTO system_logs (user_id, action, details, ip_address) VALUES (:user_id, :action, :details, :ip_address)");
         $this->db->bind(':user_id', $user_id);

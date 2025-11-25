@@ -7,13 +7,17 @@ class ScheduleModel {
     }
 
     public function getByLecturer($lecturer_id) {
-        $this->db->query("SELECT schedules.*, units.unit_name FROM schedules JOIN units ON schedules.unit_id = units.id WHERE schedules.lecturer_id = :lecturer_id");
+        $this->db->query("SELECT schedules.*, units.unit_name FROM schedules JOIN units ON schedules.unit_id = units.id WHERE schedules.lecturer_id = :lecturer_id AND schedules.day_of_week NOT IN ('Saturday', 'Sunday')");
         $this->db->bind(':lecturer_id', $lecturer_id);
         return $this->db->resultSet();
     }
 
     public function getByUnit($unit_id) {
-        $this->db->query("SELECT * FROM schedules WHERE unit_id = :unit_id");
+        $this->db->query("SELECT s.*, u.unit_name, us.full_name as lecturer_name 
+                         FROM schedules s 
+                         JOIN units u ON s.unit_id = u.id 
+                         LEFT JOIN users us ON s.lecturer_id = us.id
+                         WHERE s.unit_id = :unit_id");
         $this->db->bind(':unit_id', $unit_id);
         return $this->db->resultSet();
     }
@@ -57,6 +61,9 @@ class ScheduleModel {
 
     public function getTodaysSchedule($lecturer_id, $date) {
         $dayOfWeek = date('l', strtotime($date)); // Get full day name (e.g., Monday)
+        if (in_array($dayOfWeek, ['Saturday', 'Sunday'])) {
+            return []; // Return empty array if today is a weekend
+        }
         $this->db->query("SELECT schedules.*, units.unit_name FROM schedules JOIN units ON schedules.unit_id = units.id WHERE schedules.lecturer_id = :lecturer_id AND schedules.day_of_week = :day_of_week AND schedules.status = 'active' ORDER BY schedules.start_time ASC");
         $this->db->bind(':lecturer_id', $lecturer_id);
         $this->db->bind(':day_of_week', $dayOfWeek);
@@ -70,11 +77,11 @@ class ScheduleModel {
     }
 
     public function getAll() {
-        $this->db->query("SELECT s.*, u.unit_name, us.full_name as lecturer_name FROM schedules s JOIN units u ON s.unit_id = u.id LEFT JOIN users us ON s.lecturer_id = us.id WHERE s.status = 'active' ORDER BY u.unit_name, s.day_of_week, s.start_time");
+        $this->db->query("SELECT s.*, u.unit_name, us.full_name as lecturer_name FROM schedules s JOIN units u ON s.unit_id = u.id LEFT JOIN users us ON s.lecturer_id = us.id WHERE s.status = 'active' AND s.day_of_week NOT IN ('Saturday', 'Sunday') ORDER BY u.unit_name, s.day_of_week, s.start_time");
         return $this->db->resultSet();
     }
 
-    public function getUpcomingScheduleForStudent($student_id) {
+    public function getUpcomingClassesForStudent($student_id) {
         $today = date('Y-m-d');
         $currentDayOfWeek = date('l');
 
@@ -86,15 +93,45 @@ class ScheduleModel {
             JOIN users us ON s.lecturer_id = us.id
             WHERE se.student_id = :student_id
             AND s.status = 'active'
+            AND s.day_of_week NOT IN ('Saturday', 'Sunday')
             AND (
                 (s.day_of_week = :current_day_of_week AND s.start_time >= CURTIME()) OR
-                (FIELD(s.day_of_week, 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday') > FIELD(:current_day_of_week, 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'))
+                (FIELD(s.day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday') > FIELD(:current_day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'))
             )
-            ORDER BY FIELD(s.day_of_week, 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'), s.start_time
+            ORDER BY FIELD(s.day_of_week, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'), s.start_time
             LIMIT 5
         ");
         $this->db->bind(':student_id', $student_id);
         $this->db->bind(':current_day_of_week', $currentDayOfWeek);
+        return $this->db->resultSet();
+    }
+
+    public function getSemesters() {
+        $this->db->query("SELECT DISTINCT semester FROM schedules ORDER BY semester DESC");
+        return $this->db->resultSet();
+    }
+
+    public function getClassesInSession($lecturer_id) {
+        $currentDayOfWeek = date('l'); // e.g., 'Monday'
+        $currentTime = date('H:i:s'); // e.g., '14:30:00'
+
+        if (in_array($currentDayOfWeek, ['Saturday', 'Sunday'])) {
+            return []; // Return empty array if today is a weekend
+        }
+
+        $this->db->query("
+            SELECT schedules.*, units.unit_name 
+            FROM schedules 
+            JOIN units ON schedules.unit_id = units.id 
+            WHERE schedules.lecturer_id = :lecturer_id 
+            AND schedules.day_of_week = :current_day_of_week 
+            AND :current_time BETWEEN schedules.start_time AND schedules.end_time
+            AND schedules.status = 'active'
+            ORDER BY schedules.start_time ASC
+        ");
+        $this->db->bind(':lecturer_id', $lecturer_id);
+        $this->db->bind(':current_day_of_week', $currentDayOfWeek);
+        $this->db->bind(':current_time', $currentTime);
         return $this->db->resultSet();
     }
 }

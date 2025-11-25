@@ -1,5 +1,8 @@
 <?php
 class Schedule extends Controller {
+    private $scheduleModel;
+    private $unitModel;
+
     public function __construct() {
         require_once 'app/helpers/auth_middleware.php';
         check_role(['lecturer']);
@@ -27,6 +30,15 @@ class Schedule extends Controller {
                 'venue' => trim($_POST['venue']),
                 'semester' => trim($_POST['semester'])
             ];
+
+            // Validate day_of_week
+            if (in_array($data['day_of_week'], ['Saturday', 'Sunday'])) {
+                flash_message('schedule_error', 'Schedules cannot be created for Saturdays or Sundays.', 'alert-danger');
+                $units = $this->unitModel->getByLecturer(get_session('user_id'));
+                $this->view('lecturer/schedule/create', ['units' => $units, 'schedule' => (object)$data]);
+                return;
+            }
+
             if ($this->scheduleModel->create($data)) {
                 redirect('lecturer/schedule');
             }
@@ -48,7 +60,51 @@ class Schedule extends Controller {
                 'semester' => trim($_POST['semester']),
                 'status' => trim($_POST['status'])
             ];
+
+            // Validate day_of_week
+            if (in_array($data['day_of_week'], ['Saturday', 'Sunday'])) {
+                flash_message('schedule_error', 'Schedules cannot be updated to Saturdays or Sundays.', 'alert-danger');
+                $schedule = $this->scheduleModel->findById($id);
+                $units = $this->unitModel->getByLecturer(get_session('user_id'));
+                $this->view('lecturer/schedule/edit', ['schedule' => $schedule, 'units' => $units]);
+                return;
+            }
+
             if ($this->scheduleModel->update($id, $data)) {
+                // Notify all enrolled students of venue change
+                require_once APP . '/models/StudentEnrollment.php';
+                require_once APP . '/models/Unit.php';
+                require_once APP . '/models/Notification.php';
+                require_once APP . '/helpers/email_helper.php';
+                require_once APP . '/helpers/websocket_helper.php';
+
+                $schedule = $this->scheduleModel->findById($id);
+                $unit = $this->unitModel->findById($data['unit_id']);
+                $students = (new StudentEnrollment())->getByCourse($unit->course_id);
+                $notificationModel = new Notification();
+
+                $venue = $data['venue'];
+                $unitName = $unit->unit_name;
+                $day = $data['day_of_week'];
+                $start = $data['start_time'];
+                $end = $data['end_time'];
+                $message = "Your class ($unitName) was updated to:\n$day $start to $end\nvenue:$venue";
+                $title = "Class Venue Updated";
+
+                foreach ($students as $student) {
+                    // Create notification
+                    $notificationModel->create($student->id, 'venue_update', $title, $message, $id);
+                    // Send email
+                    send_email($student->email, $title, $message);
+                    // Send WebSocket notification
+                    WebSocketNotifier::getInstance()->notify([
+                        'type' => 'venue_update',
+                        'userId' => $student->id,
+                        'title' => $title,
+                        'message' => $message,
+                        'scheduleId' => $id
+                    ]);
+                }
                 redirect('lecturer/schedule');
             }
         } else {

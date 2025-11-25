@@ -36,18 +36,73 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.querySelector('form');
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...';
+        
+        try {
             const formData = new FormData(form);
-
-            fetch('<?php echo BASE_URL; ?>profile/edit', {
+            const response = await fetch('<?php echo BASE_URL; ?>profile/edit', {
                 method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Show success message
+                showToast('Profile updated successfully', 'success');
+                
+                // Redirect after a short delay
+                setTimeout(() => {
+                    window.location.href = result.redirect;
+                }, 1000);
+            } else {
+                // Show error messages
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Save Changes';
+                
+                if (result.errors) {
+                    // Clear previous errors
+                    document.querySelectorAll('.is-invalid').forEach(el => {
+                        el.classList.remove('is-invalid');
+                    });
+                    document.querySelectorAll('.invalid-feedback').forEach(el => {
+                        el.remove();
+                    });
+                    
+                    // Show new errors
+                    Object.entries(result.errors).forEach(([field, message]) => {
+                        const input = document.getElementById(field);
+                        if (input) {
+                            input.classList.add('is-invalid');
+                            const feedback = document.createElement('div');
+                            feedback.className = 'invalid-feedback';
+                            feedback.textContent = message;
+                            input.parentNode.appendChild(feedback);
+                        }
+                    });
+                } else {
+                    showToast(result.message || 'Failed to update profile', 'danger');
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Save Changes';
+            showToast('An error occurred while saving changes', 'danger');
+        }
+    });
             .then(data => {
                 if (data.success) {
                     // Update the name in the navbar

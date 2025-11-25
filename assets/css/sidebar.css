@@ -4,7 +4,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    background-color: var(--primary);
+    background-color: rgb(15, 76, 117) ;
     padding-top: 60px; /* Height of navbar */
     transition: all 0.3s;
     z-index: 1000;

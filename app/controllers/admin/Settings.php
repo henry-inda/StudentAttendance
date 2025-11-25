@@ -1,5 +1,7 @@
 <?php
 class Settings extends Controller {
+    private $settingModel;
+
     public function __construct() {
         require_once 'app/helpers/auth_middleware.php';
         check_role(['admin']);

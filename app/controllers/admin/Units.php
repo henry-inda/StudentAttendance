@@ -1,5 +1,9 @@
 <?php
 class Units extends Controller {
+    private $unitModel;
+    private $courseModel;
+    private $userModel;
+
     public function __construct() {
         require_once 'app/helpers/auth_middleware.php';
         check_role(['admin']);
@@ -78,6 +82,41 @@ class Units extends Controller {
     public function delete($id) {
         if ($this->unitModel->delete($id)) {
             redirect('admin/units');
+        }
+    }
+
+    public function upload() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if (isset($_FILES['csv_file']) && $_FILES['csv_file']['error'] == 0) {
+                $file = $_FILES['csv_file']['tmp_name'];
+                $handle = fopen($file, "r");
+                
+                // Skip the header row
+                fgetcsv($handle);
+
+                while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                    $lecturer = $this->userModel->findByEmail($data[3]);
+                    if ($lecturer) {
+                        $unitData = [
+                            'course_id' => $data[0],
+                            'unit_name' => $data[1],
+                            'unit_code' => $data[2],
+                            'lecturer_id' => $lecturer->id,
+                            'semester' => $data[4]
+                        ];
+                        $this->unitModel->createFromCsv($unitData);
+                    }
+                }
+                fclose($handle);
+                flash_message('upload_success', 'Units uploaded successfully.');
+                redirect('admin/units');
+            } else {
+                flash_message('upload_error', 'Error uploading file.', 'alert-danger');
+                redirect('admin/units/upload');
+            }
+        } else {
+            // Display form
+            $this->view('admin/units/upload');
         }
     }
 }

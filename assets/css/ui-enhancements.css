@@ -1,0 +1,130 @@
+/* UI Enhancement Styles */
+
+/* Spinner */
+.spinner-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Toast Notifications */
+.toast-container {
+    z-index: 1050;
+}
+
+/* Transitions */
+.fade-enter {
+    opacity: 0;
+}
+.fade-enter-active {
+    opacity: 1;
+    transition: opacity 200ms ease-in;
+}
+.fade-exit {
+    opacity: 1;
+}
+.fade-exit-active {
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+
+/* Button hover effects */
+.btn {
+    transition: all 0.2s ease-in-out;
+}
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Progress Indicator */
+.progress-indicator {
+    position: relative;
+}
+.progress-step {
+    text-align: center;
+    position: relative;
+    flex: 1;
+}
+.step-indicator {
+    width: 20px;
+    height: 20px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 50%;
+    border: 2px solid #dee2e6;
+    position: relative;
+    top: -10px;
+    transition: all 0.2s ease;
+}
+.progress-step.active .step-indicator {
+    border-color: #0d6efd;
+    color: #0d6efd;
+}
+.step-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+.progress-step.active .step-label {
+    color: #0d6efd;
+}
+
+/* Breadcrumb enhancements */
+.breadcrumb {
+    background: #f8f9fa;
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+.breadcrumb-item a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+.breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+
+/* Table enhancements */
+.table {
+    --bs-table-hover-bg: rgba(13, 110, 253, 0.05);
+}
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+.table tbody tr:hover {
+    --bs-table-accent-bg: var(--bs-table-hover-bg);
+}
+
+/* Card enhancements */
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+/* Form control focus states */
+.form-control:focus,
+.form-select:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Icon buttons */
+.btn-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}

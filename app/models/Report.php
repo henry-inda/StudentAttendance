@@ -114,16 +114,19 @@ class Report {
         $this->db->query("SELECT
                 c.course_name,
                 un.unit_name,
-                (SELECT COUNT(DISTINCT a.date) FROM attendance a JOIN schedules s ON a.schedule_id = s.id WHERE s.unit_id = un.id AND a.student_id = :student_id AND a.date BETWEEN :start_date AND :end_date) as total_classes,
-                SUM(CASE WHEN a.status = 'present' THEN 1 ELSE 0 END) as present_count,
-                SUM(CASE WHEN a.status = 'absent' THEN 1 ELSE 0 END) as absent_count,
-                SUM(CASE WHEN a.status = 'excused' THEN 1 ELSE 0 END) as excused_count,
-                (SUM(CASE WHEN a.status = 'present' THEN 1 ELSE 0 END) / (SELECT COUNT(DISTINCT a.date) FROM attendance a JOIN schedules s ON a.schedule_id = s.id WHERE s.unit_id = un.id AND a.student_id = :student_id AND a.date BETWEEN :start_date AND :end_date)) * 100 as attendance_percentage
+                (SELECT COUNT(DISTINCT a.schedule_id, a.date) FROM attendance a JOIN schedules s ON a.schedule_id = s.id WHERE s.unit_id = un.id AND a.student_id = :student_id AND a.date BETWEEN :start_date AND :end_date) as total_classes,
+                COUNT(DISTINCT CASE WHEN a.status = 'present' THEN a.id END) as present_count,
+                COUNT(DISTINCT CASE WHEN a.status = 'absent' THEN a.id END) as absent_count,
+                COUNT(DISTINCT CASE WHEN a.status = 'excused' THEN a.id END) as excused_count,
+                (
+                    CAST(COUNT(DISTINCT CASE WHEN a.status = 'present' THEN a.id END) AS DECIMAL(10, 2)) /
+                    NULLIF((SELECT COUNT(DISTINCT a.schedule_id, a.date) FROM attendance a JOIN schedules s ON a.schedule_id = s.id WHERE s.unit_id = un.id AND a.student_id = :student_id AND a.date BETWEEN :start_date AND :end_date), 0)
+                ) * 100 as attendance_percentage
             FROM student_enrollments se
             JOIN courses c ON se.course_id = c.id
             JOIN units un ON c.id = un.course_id
             LEFT JOIN schedules s ON un.id = s.unit_id
-            LEFT JOIN attendance a ON s.id = a.schedule_id AND a.student_id = se.student_id
+            LEFT JOIN attendance a ON s.id = a.schedule_id AND a.student_id = se.student_id AND a.date BETWEEN :start_date AND :end_date
             WHERE se.student_id = :student_id
             GROUP BY c.course_name, un.unit_name
             ORDER BY c.course_name, un.unit_name");

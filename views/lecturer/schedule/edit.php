@@ -41,9 +41,9 @@
             <div class="mb-3">
                 <label for="semester" class="form-label">Semester</label>
                 <select class="form-select" id="semester" name="semester">
-                    <option value="JAN/APR" <?php echo ($data['schedule']->semester == 'JAN/APR') ? 'selected' : ''; ?>>JAN/APR</option>
-                    <option value="MAY/AUG" <?php echo ($data['schedule']->semester == 'MAY/AUG') ? 'selected' : ''; ?>>MAY/AUG</option>
-                    <option value="SEP/DEC" <?php echo ($data['schedule']->semester == 'SEP/DEC') ? 'selected' : ''; ?>>SEP/DEC</option>
+                    <option value="JAN/APR" <?php echo ($data['schedule']->semester == 'JAN/APR') ? 'selected' : ''; ?>>Jan/Apr</option>
+                    <option value="MAY/AUG" <?php echo ($data['schedule']->semester == 'MAY/AUG') ? 'selected' : ''; ?>>May/Aug</option>
+                    <option value="SEP/DEC" <?php echo ($data['schedule']->semester == 'SEP/DEC') ? 'selected' : ''; ?>>Sep/Dec</option>
                 </select>
             </div>
             <div class="mb-3">

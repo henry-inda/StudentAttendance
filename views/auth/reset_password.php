@@ -13,6 +13,11 @@
             <div class="col-md-6 col-lg-4">
                 <div class="card login-card">
                     <div class="card-body">
+                        <div class="text-center mb-4">
+                            <!-- Placeholder for logo -->
+                            <img src="<?php echo BASE_URL; ?>assets/images/logo.png" alt="System Logo" style="width: 100px; height: 100px;">
+                            <h3>Attendance Monitoring System</h3>
+                        </div>
                         <h3 class="card-title text-center">Reset Password</h3>
                         <?php flash_message('reset_password_fail'); ?>
                         <form action="<?php echo BASE_URL; ?>auth/updatePassword" method="POST">

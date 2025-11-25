@@ -44,9 +44,12 @@ require_once 'app/helpers/error_handler.php';
 // Set $_GET['url'] for routing if not already set (e.g., for PHP built-in server)
 if (!isset($_GET['url'])) {
     $requestUri = $_SERVER['REQUEST_URI'];
-    // Remove base path if necessary (e.g., if project is in a subfolder)
-    // For localhost:8000, requestUri will be like /auth/authenticate
-    $_GET['url'] = ltrim($requestUri, '/');
+    // Normalize multiple leading slashes to a single slash
+    $requestUri = preg_replace('#/+#', '/', $requestUri); // Add this line
+    error_log('index.php: $requestUri (normalized) = ' . $requestUri); // Debugging line
+    $parsedUrl = parse_url($requestUri); // Parse the URL
+    error_log('index.php: $parsedUrl[path] = ' . ($parsedUrl['path'] ?? 'NULL')); // Debugging line
+    $_GET['url'] = ltrim($parsedUrl['path'] ?? '', '/'); // Get only the path component
 }
 
 // If root is requested, redirect to login page to provide a friendly default

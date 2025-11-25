@@ -43,4 +43,20 @@ class Dashboard extends Controller {
         header('Content-Type: application/json');
         echo json_encode($attendanceData);
     }
+
+    public function getUnitAttendanceChartData() {
+        $student_id = get_session('user_id');
+        $enrolledUnits = $this->attendanceModel->getEnrolledUnitsWithAttendance($student_id);
+
+        $labels = [];
+        $data = [];
+
+        foreach ($enrolledUnits as $unit) {
+            $labels[] = $unit->unit_code; // Or unit_name, depending on preference
+            $data[] = $unit->attendance_percentage;
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(['labels' => $labels, 'data' => $data]);
+    }
 }

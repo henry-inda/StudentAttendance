@@ -62,4 +62,14 @@ class Unit {
         $this->db->bind(':id', $id);
         return $this->db->execute();
     }
+
+    public function createFromCsv($data) {
+        $this->db->query("INSERT INTO units (course_id, unit_name, unit_code, lecturer_id, semester) VALUES (:course_id, :unit_name, :unit_code, :lecturer_id, :semester)");
+        $this->db->bind(':course_id', $data['course_id']);
+        $this->db->bind(':unit_name', $data['unit_name']);
+        $this->db->bind(':unit_code', $data['unit_code']);
+        $this->db->bind(':lecturer_id', $data['lecturer_id']);
+        $this->db->bind(':semester', $data['semester']);
+        return $this->db->execute();
+    }
 }

@@ -9,6 +9,7 @@ $dir = __DIR__;
 // Files that must be required first (if present)
 $priority = [
 	'session_helper.php',
+    'security_helper.php', // Include security helper early for CSRF
 ];
 
 foreach ($priority as $p) {
@@ -17,6 +18,9 @@ foreach ($priority as $p) {
 		require_once $path;
 	}
 }
+
+// Generate CSRF token after session is started and security helper is loaded
+generate_csrf_token();
 
 // Require remaining helper files (alphabetical) except this bootstrap and error handler
 $files = glob($dir . DIRECTORY_SEPARATOR . '*.php');
@@ -36,3 +40,23 @@ foreach ($files as $file) {
 	}
 }
 
+if (!function_exists('get_semester_name')) {
+    function get_semester_name($semester_name_from_db) {
+        switch ($semester_name_from_db) {
+            case 'JAN/APR':
+                return 'Jan/Apr';
+            case 'MAY/AUG':
+                return 'May/Aug';
+            case 'SEP/DEC':
+                return 'Sep/Dec';
+            case '1': // Also handle numeric if they exist in old data
+                return 'Jan/Apr';
+            case '2':
+                return 'May/Aug';
+            case '3':
+                return 'Sep/Dec';
+            default:
+                return 'Unknown';
+        }
+    }
+}

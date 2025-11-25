@@ -1,5 +1,8 @@
 <?php
 class Courses extends Controller {
+    private $courseModel;
+    private $departmentModel;
+
     public function __construct() {
         require_once 'app/helpers/auth_middleware.php';
         check_role(['admin']);

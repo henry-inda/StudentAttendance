@@ -27,10 +27,10 @@
                     <td><span class="badge bg-info"><?php echo $request->status; ?></span></td>
                     <td><?php echo $request->created_at; ?></td>
                     <td>
-                        <a href="<?php echo BASE_URL; ?>lecturer/excuseRequests/show/<?php echo $request->id; ?>" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></a>
+                        <a href="<?php echo BASE_URL; ?>lecturer/excuseRequests/show/<?php echo $request->id; ?>" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="View"><i class="fas fa-eye"></i></a>
                         <?php if ($request->status == 'pending'): ?>
-                            <a href="<?php echo BASE_URL; ?>lecturer/excuseRequests/approve/<?php echo $request->id; ?>" class="btn btn-sm btn-success"><i class="fas fa-check"></i></a>
-                            <a href="<?php echo BASE_URL; ?>lecturer/excuseRequests/reject/<?php echo $request->id; ?>" class="btn btn-sm btn-danger"><i class="fas fa-times"></i></a>
+                            <a href="<?php echo BASE_URL; ?>lecturer/excuseRequests/approve/<?php echo $request->id; ?>" class="btn btn-sm btn-success" data-bs-toggle="tooltip" title="Approve"><i class="fas fa-check"></i></a>
+                            <a href="<?php echo BASE_URL; ?>lecturer/excuseRequests/reject/<?php echo $request->id; ?>" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Reject" data-confirm="Are you sure you want to reject this request?"><i class="fas fa-times"></i></a>
                         <?php endif; ?>
                     </td>
                 </tr>

@@ -5,24 +5,30 @@
 <div class="content">
     <div class="container-fluid">
         <h2>Select Class to Mark Attendance</h2>
-        <div class="mb-3">
-            <label for="schedule_id" class="form-label">Select Class</label>
-            <select class="form-select" id="schedule_id" name="schedule_id">
-                <?php foreach ($data['schedules'] as $schedule): ?>
-                    <option value="<?php echo $schedule->id; ?>"><?php echo $schedule->unit_name . ' - ' . $schedule->day_of_week . ' (' . $schedule->start_time . ' - ' . $schedule->end_time . ')'; ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <button id="mark-attendance-btn" class="btn btn-primary">Mark Attendance</button>
+        <?php if (empty($data['schedules'])): ?>
+            <div class="alert alert-info" role="alert">
+                No scheduled class at the moment.
+            </div>
+        <?php else: ?>
+            <div class="mb-3">
+                <label for="schedule_id" class="form-label">Select Class</label>
+                <select class="form-select" id="schedule_id" name="schedule_id">
+                    <?php foreach ($data['schedules'] as $schedule): ?>
+                        <option value="<?php echo $schedule->id; ?>"><?php echo $schedule->unit_name . ' - ' . $schedule->day_of_week . ' (' . $schedule->start_time . ' - ' . $schedule->end_time . ')'; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <button id="mark-attendance-btn" class="btn btn-primary">Mark Attendance</button>
 
-        <script>
-            document.getElementById('mark-attendance-btn').addEventListener('click', function() {
-                var scheduleId = document.getElementById('schedule_id').value;
-                if (scheduleId) {
-                    window.location.href = '<?php echo BASE_URL; ?>lecturer/attendance/mark/' + scheduleId;
-                }
-            });
-        </script>
+            <script>
+                document.getElementById('mark-attendance-btn').addEventListener('click', function() {
+                    var scheduleId = document.getElementById('schedule_id').value;
+                    if (scheduleId) {
+                        window.location.href = '<?php echo BASE_URL; ?>lecturer/attendance/mark/' + scheduleId;
+                    }
+                });
+            </script>
+        <?php endif; ?>
     </div>
 </div>
 

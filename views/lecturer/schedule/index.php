@@ -27,11 +27,11 @@
                     <td><?php echo $schedule->start_time; ?></td>
                     <td><?php echo $schedule->end_time; ?></td>
                     <td><?php echo $schedule->venue; ?></td>
-                    <td><?php echo $schedule->semester; ?></td>
+                    <td><?php echo get_semester_name($schedule->semester); ?></td>
                     <td><span class="badge bg-success"><?php echo $schedule->status; ?></span></td>
                     <td>
-                        <a href="<?php echo BASE_URL; ?>lecturer/schedule/edit/<?php echo $schedule->id; ?>" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
-                        <a href="<?php echo BASE_URL; ?>lecturer/schedule/delete/<?php echo $schedule->id; ?>" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></a>
+                        <a href="<?php echo BASE_URL; ?>lecturer/schedule/edit/<?php echo $schedule->id; ?>" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" title="Edit"><i class="fas fa-edit"></i></a>
+                        <a href="<?php echo BASE_URL; ?>lecturer/schedule/delete/<?php echo $schedule->id; ?>" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Delete" data-confirm="Are you sure you want to delete this schedule entry?"><i class="fas fa-trash"></i></a>
                     </td>
                 </tr>
                 <?php endforeach; ?>

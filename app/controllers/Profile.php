@@ -1,5 +1,7 @@
 <?php
 class Profile extends Controller {
+    private $userModel;
+    
     public function __construct() {
         require_once 'app/helpers/auth_middleware.php';
         require_once 'app/helpers/session_helper.php';
@@ -19,22 +21,89 @@ class Profile extends Controller {
     }
 
     public function edit() {
+        require_once APP . '/helpers/validation_helper.php';
+
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $data = [
                 'full_name' => trim($_POST['full_name']),
                 'phone' => trim($_POST['phone']),
+                'profile_picture' => null
             ];
+
+            // Validate inputs
+            $errors = [];
+            if (empty($data['full_name'])) {
+                $errors['full_name'] = 'Name is required.';
+            }
+            
+            if (!empty($_POST['phone']) && !vh_validate_phone($_POST['phone'])) {
+                $errors['phone'] = 'Please enter a valid phone number.';
+            }
+
+            // Handle profile picture upload if present
+            if (!empty($_FILES['profile_picture']['name'])) {
+                if (!vh_validate_uploaded_file($_FILES['profile_picture'], ['image/jpeg', 'image/png'])) {
+                    $errors['profile_picture'] = 'Invalid image file. Please upload a JPG or PNG file under 2MB.';
+                } else {
+                    // Generate unique filename
+                    $ext = pathinfo($_FILES['profile_picture']['name'], PATHINFO_EXTENSION);
+                    $filename = 'profile_' . get_session('user_id') . '_' . time() . '.' . $ext;
+                    $target = UPLOADS_PATH . '/profiles/' . $filename;
+
+                    if (move_uploaded_file($_FILES['profile_picture']['tmp_name'], $target)) {
+                        $data['profile_picture'] = 'profiles/' . $filename;
+                    } else {
+                        $errors['profile_picture'] = 'Failed to upload image. Please try again.';
+                    }
+                }
+            }
+
+            // If requested as AJAX, send JSON response
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+                      strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+            if (!empty($errors)) {
+                if ($isAjax) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['success' => false, 'errors' => $errors]);
+                    exit;
+                } else {
+                    $data['errors'] = $errors;
+                    $data['user'] = (object)$data;
+                    $this->view('shared/profile/edit', $data);
+                    return;
+                }
+            }
 
             if ($this->userModel->updateProfile(get_session('user_id'), $data)) {
                 // Update session with new name
                 $user = $this->userModel->findById(get_session('user_id'));
                 set_session('user_name', $user->full_name);
 
-                header('Content-Type: application/json');
-                echo json_encode(['success' => true, 'user' => $user]);
+                if ($isAjax) {
+                    header('Content-Type: application/json');
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Profile updated successfully',
+                        'redirect' => BASE_URL . 'profile'
+                    ]);
+                    exit;
+                } else {
+                    flash_message('success', 'Profile updated successfully');
+                    redirect('profile');
+                }
             } else {
-                header('Content-Type: application/json');
-                echo json_encode(['success' => false]);
+                if ($isAjax) {
+                    header('Content-Type: application/json');
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Failed to update profile'
+                    ]);
+                    exit;
+                } else {
+                    flash_message('error', 'Failed to update profile');
+                    redirect('profile/edit');
+                }
             }
         } else {
             $user = $this->userModel->findById(get_session('user_id'));

@@ -13,15 +13,29 @@ class MySchedule extends Controller {
     }
 
     public function list() {
-        // Get enrolled units for the student
-        $enrolledUnits = $this->enrollmentModel->getByStudent(get_session('user_id'));
+        $student_id = get_session('user_id');
+        $enrolledCourses = $this->enrollmentModel->getByStudent($student_id);
         $schedules = [];
 
-        foreach ($enrolledUnits as $enrollment) {
-            // Assuming unit_id is available in enrollment
-            $unitSchedules = $this->scheduleModel->getByUnit($enrollment->unit_id);
-            $schedules = array_merge($schedules, $unitSchedules);
+        foreach ($enrolledCourses as $enrollment) {
+            $unitsInCourse = $this->unitModel->getByCourse($enrollment->course_id);
+            foreach ($unitsInCourse as $unit) {
+                $unitSchedules = $this->scheduleModel->getByUnit($unit->id);
+                $schedules = array_merge($schedules, $unitSchedules);
+            }
         }
+
+        // Sort schedules by day of week and then by start time
+        usort($schedules, function($a, $b) {
+            $daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            $dayA = array_search($a->day_of_week, $daysOfWeek);
+            $dayB = array_search($b->day_of_week, $daysOfWeek);
+
+            if ($dayA == $dayB) {
+                return strtotime($a->start_time) - strtotime($b->start_time);
+            }
+            return $dayA - $dayB;
+        });
 
         $data = [
             'title' => 'My Schedule List',
@@ -32,7 +46,7 @@ class MySchedule extends Controller {
 
     public function upcoming() {
         $student_id = get_session('user_id');
-        $upcomingClasses = $this->scheduleModel->getUpcomingScheduleForStudent($student_id);
+        $upcomingClasses = $this->scheduleModel->getUpcomingClassesForStudent($student_id);
 
         $data = [
             'title' => 'Upcoming Classes',

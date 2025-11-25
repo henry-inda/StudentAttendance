@@ -1,5 +1,14 @@
 <?php
 class Dashboard extends Controller {
+    private $userModel;
+    private $departmentModel;
+    private $courseModel;
+    private $unitModel;
+    private $enrollmentModel;
+    private $attendanceModel;
+    private $reportModel;
+    private $systemSettingModel;
+
     public function __construct() {
         require_once 'app/helpers/auth_middleware.php';
         check_role(['admin']);
@@ -29,6 +38,11 @@ class Dashboard extends Controller {
         // Placeholder for today's attendance rate
         $attendanceRate = 0;
 
+        // Get attendance overview for the chart
+        $start_date = date('Y-m-d', strtotime('-7 days'));
+        $end_date = date('Y-m-d');
+        $attendanceOverview = $this->reportModel->getAttendanceOverview($start_date, $end_date);
+
         $data = [
             'title' => 'Admin Dashboard',
             'total_students' => $totalStudents,
@@ -37,9 +51,19 @@ class Dashboard extends Controller {
             'total_units' => $totalUnits,
             'recent_enrollments' => $recentEnrollments,
             'attendance_rate' => $attendanceRate,
-            'low_attendance_students' => $lowAttendanceStudents
+            'low_attendance_students' => $lowAttendanceStudents,
+            'attendance_overview' => $attendanceOverview
         ];
 
         $this->view('admin/dashboard', $data);
+    }
+
+    public function getAttendanceOverviewData() {
+        $start_date = $_GET['start_date'] ?? date('Y-m-d', strtotime('-7 days'));
+        $end_date = $_GET['end_date'] ?? date('Y-m-d');
+
+        $attendanceOverview = $this->reportModel->getAttendanceOverview($start_date, $end_date);
+        header('Content-Type: application/json');
+        echo json_encode($attendanceOverview);
     }
 }

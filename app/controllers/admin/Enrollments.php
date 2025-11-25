@@ -1,5 +1,9 @@
 <?php
 class Enrollments extends Controller {
+    private $enrollmentModel;
+    private $userModel;
+    private $courseModel;
+
     public function __construct() {
         require_once 'app/helpers/auth_middleware.php';
         check_role(['admin']);

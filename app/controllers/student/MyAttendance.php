@@ -36,11 +36,13 @@ class Myattendance extends Controller {
             $schedule_id = $decoded->data->schedule_id;
             $date = $decoded->data->date;
             $student_id = get_session('user_id');
+            error_log("Marking attendance for student_id: {$student_id}, schedule_id: {$schedule_id}, date: {$date}");
 
             // Check if attendance is already marked for this student, schedule, and date
             $existing_attendance = $this->attendanceModel->getByScheduleAndStudent($schedule_id, $student_id, $date);
 
             if ($existing_attendance) {
+                error_log("Attendance already marked for student_id: {$student_id}, schedule_id: {$schedule_id}, date: {$date}");
                 flash_message('info', 'Attendance for this session has already been marked.');
                 redirect('student/dashboard');
                 return;
@@ -55,8 +57,22 @@ class Myattendance extends Controller {
                 'notes' => 'Marked via QR code scan'
             ];
 
-            if ($this->attendanceModel->markAttendance($data)) {
+            $result = $this->attendanceModel->markAttendance($data);
+            error_log("markAttendance result: " . ($result ? 'Success' : 'Failure'));
+
+            if ($result) {
                 flash_message('success', 'Attendance marked successfully!');
+
+                // Send WebSocket notification to the lecturer
+                require_once APP . '/helpers/websocket_helper.php';
+                WebSocketNotifier::getInstance()->notify([
+                    'type' => 'attendance_update',
+                    'scheduleId' => $schedule_id,
+                    'date' => $date,
+                    'studentId' => $student_id,
+                    'status' => 'present'
+                ]);
+
                 redirect('student/dashboard');
             } else {
                 flash_message('error', 'Failed to mark attendance. Please try again.');
@@ -75,5 +91,48 @@ class Myattendance extends Controller {
             flash_message('error', 'An error occurred while processing the QR code. ' . $e->getMessage());
             redirect('student/dashboard');
         }
+    }
+
+    public function scan_qr() {
+        $data = [
+            'title' => 'Scan QR Code'
+        ];
+        $this->view('student/attendance/scan_qr', $data);
+    }
+
+    public function index() {
+        $student_id = get_session('user_id');
+        $attendanceData = $this->attendanceModel->getEnrolledUnitsWithAttendance($student_id);
+
+        $data = [
+            'title' => 'My Attendance',
+            'attendanceData' => $attendanceData
+        ];
+        $this->view('student/attendance/index', $data);
+    }
+
+    public function unit_details($unit_id) {
+        $student_id = get_session('user_id');
+
+        // Fetch unit details
+        $unitModel = $this->model('Unit');
+        $unit = $unitModel->findById($unit_id);
+
+        if (!$unit) {
+            flash_message('error', 'Unit not found.');
+            redirect('student/myattendance');
+            return;
+        }
+
+        // Fetch attendance history for the student and unit
+        $attendance_history = $this->attendanceModel->getByStudentAndUnit($student_id, $unit_id);
+
+        $data = [
+            'title' => 'Attendance Details for ' . $unit->unit_name,
+            'unit' => $unit,
+            'attendance_history' => $attendance_history
+        ];
+
+        $this->view('student/attendance/unit_details', $data);
     }
 }

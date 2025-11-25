@@ -25,9 +25,9 @@
             <div class="mb-3">
                 <label for="semester" class="form-label">Semester</label>
                 <select class="form-select" id="semester" name="semester">
-                    <option value="JAN/APR">JAN/APR</option>
-                    <option value="MAY/AUG">MAY/AUG</option>
-                    <option value="SEP/DEC">SEP/DEC</option>
+                    <option value="JAN/APR">Jan/Apr</option>
+                    <option value="MAY/AUG">May/Aug</option>
+                    <option value="SEP/DEC">Sep/Dec</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>

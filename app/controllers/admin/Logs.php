@@ -1,5 +1,7 @@
 <?php
 class Logs extends Controller {
+    private $logModel;
+
     public function __construct() {
         require_once 'app/helpers/auth_middleware.php';
         check_role(['admin']);

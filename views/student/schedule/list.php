@@ -21,7 +21,7 @@
                     <td><?php echo $schedule->day_of_week; ?></td>
                     <td><?php echo $schedule->start_time . ' - ' . $schedule->end_time; ?></td>
                     <td><?php echo $schedule->unit_name; ?></td>
-                    <td>[Lecturer Name Placeholder]</td>
+                    <td><?php echo $schedule->lecturer_name; ?></td>
                     <td><?php echo $schedule->venue; ?></td>
                 </tr>
                 <?php endforeach; ?>
