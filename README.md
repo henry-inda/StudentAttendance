@@ -26,7 +26,7 @@ scripts\start_services.bat
 
 This will start:
 - PHP Development Server at http://localhost:8000
-- WebSocket Server at ws://localhost:8080
+- WebSocket Server at ws://localhost:8081
 
 ### Troubleshooting
 
