@@ -16,7 +16,8 @@ class Myattendance extends Controller {
         $this->attendanceModel = $this->model('AttendanceModel');
     }
 
-    public function mark_by_qr($token = '') {
+    public function mark_by_qr() {
+        $token = $_GET['token'] ?? '';
         if (empty($token)) {
             flash_message('error', 'QR code token is missing.');
             redirect('student/dashboard');
@@ -36,13 +37,10 @@ class Myattendance extends Controller {
             $schedule_id = $decoded->data->schedule_id;
             $date = $decoded->data->date;
             $student_id = get_session('user_id');
-            error_log("Marking attendance for student_id: {$student_id}, schedule_id: {$schedule_id}, date: {$date}");
 
-            // Check if attendance is already marked for this student, schedule, and date
             $existing_attendance = $this->attendanceModel->getByScheduleAndStudent($schedule_id, $student_id, $date);
 
             if ($existing_attendance) {
-                error_log("Attendance already marked for student_id: {$student_id}, schedule_id: {$schedule_id}, date: {$date}");
                 flash_message('info', 'Attendance for this session has already been marked.');
                 redirect('student/dashboard');
                 return;
@@ -57,12 +55,10 @@ class Myattendance extends Controller {
                 'notes' => 'Marked via QR code scan'
             ];
 
-            $result = $this->attendanceModel->markAttendance($data);
-            error_log("markAttendance result: " . ($result ? 'Success' : 'Failure'));
+            $result = $this->attendanceModel->upsertAttendance($data);
 
             if ($result) {
                 flash_message('success', 'Attendance marked successfully!');
-
                 // Send WebSocket notification to the lecturer
                 require_once APP . '/helpers/websocket_helper.php';
                 WebSocketNotifier::getInstance()->notify([
@@ -72,7 +68,6 @@ class Myattendance extends Controller {
                     'studentId' => $student_id,
                     'status' => 'present'
                 ]);
-
                 redirect('student/dashboard');
             } else {
                 flash_message('error', 'Failed to mark attendance. Please try again.');
@@ -86,8 +81,6 @@ class Myattendance extends Controller {
             flash_message('error', 'Invalid QR code signature. Please ensure the QR code is valid.');
             redirect('student/dashboard');
         } catch (\Exception $e) {
-            // Log the error for debugging
-            error_log("JWT Decode Error: " . $e->getMessage());
             flash_message('error', 'An error occurred while processing the QR code. ' . $e->getMessage());
             redirect('student/dashboard');
         }

@@ -64,7 +64,7 @@
                                     <?php foreach ($data['courses'] as $course): ?>
                                         <option value="<?php echo $course->id; ?>" 
                                             <?php echo ($data['user']->course_id == $course->id) ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($course->name); ?>
+                                            <?php echo htmlspecialchars($course->course_name); ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -141,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <?php foreach ($data['courses'] as $course): ?>
                     <option value="<?php echo $course->id; ?>" 
                         <?php echo ($data['user']->course_id == $course->id) ? 'selected' : ''; ?>>
-                        <?php echo htmlspecialchars($course->name); ?>
+                        <?php echo htmlspecialchars($course->course_name); ?>
                     </option>
                 <?php endforeach; ?>
             </select>

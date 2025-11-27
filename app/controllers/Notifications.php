@@ -67,28 +67,56 @@ class Notifications extends Controller {
     }
 
     public function get_new() {
-        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
-                  strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
-
-        // Default response
+        header('Content-Type: application/json');
         $response = ['success' => false, 'notifications' => [], 'error' => null];
 
-        // Check session
         if (!is_logged_in()) {
             $response['error'] = 'Not authenticated';
-            header('Content-Type: application/json');
-            echo json_encode($response);
-            return;
+        } else {
+            try {
+                $notifications = $this->notificationModel->getByUser(get_session('user_id'), true);
+                $response['success'] = true;
+                $response['notifications'] = $notifications;
+            } catch (Exception $e) {
+                $response['error'] = $e->getMessage();
+            }
         }
 
-        try {
-            $notifications = $this->notificationModel->getByUser(get_session('user_id'), true);
-            $response['success'] = true;
-            $response['notifications'] = $notifications;
-        } catch (Exception $e) {
-            $response['error'] = $e->getMessage();
-        }
-        header('Content-Type: application/json');
         echo json_encode($response);
+    }
+
+    public function show($id) {
+        if (!is_logged_in()) {
+            redirect('auth/login');
+        }
+
+        $notification = $this->notificationModel->getById($id);
+
+        if ($notification && $notification->user_id == get_session('user_id')) {
+            // Mark as read
+            $this->notificationModel->markAsRead($id);
+
+            // Determine redirect URL
+            $redirect_url = '';
+            switch ($notification->type) {
+                case 'account_request':
+                    $redirect_url = 'admin/requests/show/' . $id . '/' . $notification->related_id;
+                    break;
+                case 'excuse_request':
+                    $redirect_url = 'lecturer/excuse_requests/show/' . $notification->related_id;
+                    break;
+                case 'new_unit_enrolment':
+                    $redirect_url = 'student/myschedule/list';
+                    break;
+                default:
+                    $redirect_url = 'notifications'; // Fallback to notifications list
+                    break;
+            }
+            redirect($redirect_url);
+        } else {
+            // Notification not found or doesn't belong to the user
+            flash_message('error', 'Notification not found.');
+            redirect('notifications');
+        }
     }
 }

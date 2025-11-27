@@ -76,8 +76,6 @@ class Auth extends Controller {
         $_SESSION['user_name'] = $user->full_name;
         $_SESSION['user_role'] = $user->role;
         
-        session_write_close(); // Write session data and close the session
-        
         // Redirect based on role
         switch($user->role) {
             case 'admin':
@@ -164,7 +162,7 @@ class Auth extends Controller {
                     send_email($admin_email, $subject, $body);
 
                     // Create notification for admin
-                    $this->model('Notification')->createNotification($admins[0]->id, 'account_request', 'New Account Request', 'A new account request has been submitted.', $request_id);
+                    $this->model('Notification')->create($admins[0]->id, 'account_request', 'New Account Request', 'A new account request has been submitted.', $request_id);
                 }
 
                 flash_message('request_success', 'Your account request has been submitted successfully. You will receive an email once it is approved.');

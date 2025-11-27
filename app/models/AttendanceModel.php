@@ -51,9 +51,8 @@ class AttendanceModel {
         $this->db->query("
             SELECT u.id AS unit_id, u.unit_name, u.unit_code
             FROM units u
-            JOIN courses c ON u.course_id = c.id
-            JOIN student_enrollments se ON c.id = se.course_id
-            WHERE se.student_id = :student_id AND se.status = 'enrolled'
+            JOIN student_unit_enrollments sue ON u.id = sue.unit_id
+            WHERE sue.student_id = :student_id
         ");
         $this->db->bind(':student_id', $student_id);
         $units = $this->db->resultSet();
@@ -84,6 +83,23 @@ class AttendanceModel {
         $this->db->bind(':marked_by', $data['marked_by']);
         $this->db->bind(':notes', $data['notes']);
         return $this->db->execute();
+    }
+
+    public function upsertAttendance($data) {
+        $existingRecord = $this->getByScheduleAndStudent($data['schedule_id'], $data['student_id'], $data['date']);
+
+        if ($existingRecord) {
+            // Update existing record
+            $this->db->query("UPDATE attendance SET status = :status, notes = :notes, marked_by = :marked_by WHERE id = :id");
+            $this->db->bind(':id', $existingRecord->id);
+            $this->db->bind(':status', $data['status']);
+            $this->db->bind(':notes', $data['notes']);
+            $this->db->bind(':marked_by', $data['marked_by']);
+            return $this->db->execute();
+        } else {
+            // Insert new record
+            return $this->markAttendance($data);
+        }
     }
 
     public function getByStudentAndUnit($student_id, $unit_id) {
@@ -200,11 +216,7 @@ class AttendanceModel {
         return $this->db->single();
     }
 
-    public function markAsExcused($student_id, $schedule_id, $date) {
-        // First, check if an attendance record exists for this student, schedule, and date.
-        // If not, we might need to create one as 'excused' (or decide to only update existing ones).
-        // For simplicity now, let's assume one exists and we will update it.
-        // If no record exists, this operation will silently fail on the update step unless we insert.
+    public function markAsExcused($student_id, $schedule_id, $date, $marked_by) {
         $attendanceRecord = $this->getByScheduleAndStudent($schedule_id, $student_id, $date);
 
         if ($attendanceRecord) {
@@ -216,7 +228,7 @@ class AttendanceModel {
                 'student_id' => $student_id,
                 'date' => $date,
                 'status' => 'excused',
-                'marked_by' => null, // Assuming no one marked it manually, it's auto-excused
+                'marked_by' => $marked_by,
                 'notes' => 'Excused due to approved request'
             ];
             return $this->markAttendance($data);

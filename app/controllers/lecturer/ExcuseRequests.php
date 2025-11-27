@@ -8,8 +8,6 @@ class ExcuseRequests extends Controller {
         require_once 'app/helpers/auth_middleware.php';
         check_role(['lecturer']);
         $this->excuseRequestModel = $this->model('ExcuseRequest');
-        $this->attendanceModel = $this->model('AttendanceModel');
-        $this->scheduleModel = $this->model('ScheduleModel'); // Include ScheduleModel
     }
 
     public function index() {
@@ -35,12 +33,15 @@ class ExcuseRequests extends Controller {
             // Get excuse request details
             $excuseRequest = $this->excuseRequestModel->findById($id);
             
-            // Mark student as excused in attendance
-            if ($excuseRequest) {
-                $this->attendanceModel->markAsExcused($excuseRequest->student_id, $excuseRequest->schedule_id, $excuseRequest->date);
-            }
-            
             // Send WebSocket notification
+            require_once APP . '/helpers/websocket_helper.php';
+            WebSocketNotifier::getInstance()->notify([
+                'type' => 'excuse_response',
+                'studentId' => $excuseRequest->student_id,
+                'excuseId' => $id,
+                'status' => 'approved',
+                'message' => 'Your excuse request has been approved'
+            ]);
             require_once APP . '/helpers/websocket_helper.php';
             WebSocketNotifier::getInstance()->notify([
                 'type' => 'excuse_response',

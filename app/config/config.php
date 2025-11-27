@@ -1,21 +1,28 @@
 <?php
+// Load Composer's autoloader
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+// Load environment variables from .env file
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
+$dotenv->load();
+
 // Database Configuration
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'project_db');
+define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
+define('DB_USER', $_ENV['DB_USER'] ?? 'root');
+define('DB_PASS', $_ENV['DB_PASS'] ?? '');
+define('DB_NAME', $_ENV['DB_NAME'] ?? 'project_db');
 
 // Base URL
-define('BASE_URL', 'http://localhost:8000/');
+define('BASE_URL', $_ENV['BASE_URL'] ?? 'http://localhost:8000/');
 
 // Email Configuration
-define('SMTP_HOST', 'smtp.gmail.com');
-define('SMTP_USER', 'howino810@gmail.com');
-define('SMTP_PASS', 'svcp kbva rhez wckv');
-define('SMTP_PORT', 587);
+define('SMTP_HOST', $_ENV['SMTP_HOST'] ?? 'smtp.gmail.com');
+define('SMTP_USER', $_ENV['SMTP_USER'] ?? '');
+define('SMTP_PASS', $_ENV['SMTP_PASS'] ?? '');
+define('SMTP_PORT', $_ENV['SMTP_PORT'] ?? 587);
 
 // System Name
-define('SYSTEM_NAME', 'Student Attendance System');
+define('SYSTEM_NAME', $_ENV['SYSTEM_NAME'] ?? 'Student Attendance System');
 
 // Upload Paths
 define('UPLOADS_PATH', 'uploads/');
@@ -29,4 +36,4 @@ define('SESSION_NAME', 'student_attendance');
 date_default_timezone_set('Africa/Nairobi');
 
 // JWT Secret
-define('JWT_SECRET', '62f50ec288db76a72bf88d286178128641ba260218e8bd465979bb20fdbabbfb');
+define('JWT_SECRET', $_ENV['JWT_SECRET'] ?? '');

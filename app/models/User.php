@@ -61,6 +61,10 @@ class User {
             // If the created user is a student and has a course_id, enroll them in units
             if ($data['role'] === 'student' && !empty($data['course_id'])) {
                 // Load necessary models
+                require_once __DIR__ . '/SystemSetting.php';
+                require_once __DIR__ . '/Course.php';
+                require_once __DIR__ . '/StudentEnrollment.php';
+                
                 $systemSettingModel = new SystemSetting();
                 $courseModel = new Course();
                 $studentEnrollmentModel = new StudentEnrollment();
@@ -75,7 +79,7 @@ class User {
                     foreach ($units as $unit) {
                         // Enroll student in each unit
                         if (!$studentEnrollmentModel->isStudentEnrolledInUnit($user_id, $unit->id)) {
-                            $studentEnrollmentModel->enrollStudentInUnit($user_id, $unit->id);
+                            $enrollment_result = $studentEnrollmentModel->enrollStudentInUnit($user_id, $unit->id);
                         }
                     }
                 } else {

@@ -35,7 +35,7 @@
             <div class="notifications-list">
                 <?php foreach ($data['notifications'] as $notification): ?>
                     <?php
-                        // Determine icon based on notification type
+                        // ... (icon and time formatting logic remains the same)
                         $icon = 'bell';
                         $bg_color = 'bg-light';
                         switch ($notification->type) {
@@ -81,9 +81,31 @@
                         } else {
                             $time = $date->format('M j, Y g:i A');
                         }
+
+                        // Generate action link based on notification type
+                        $action_link = '';
+                        if ($notification->related_id) {
+                            switch ($notification->type) {
+                                case 'excuse_response':
+                                case 'excuse_request':
+                                    $action_link = BASE_URL . 'student/excuseRequests/view/' . $notification->related_id;
+                                    break;
+                                case 'upcoming_class':
+                                case 'venue_change':
+                                case 'class_cancelled':
+                                    $action_link = BASE_URL . 'student/schedule/view/' . $notification->related_id;
+                                    break;
+                                case 'marked_absent':
+                                    $action_link = BASE_URL . 'student/attendance/view/' . $notification->related_id;
+                                    break;
+                                case 'new_request':
+                                    $action_link = BASE_URL . 'admin/requests/show/' . $notification->id . '/' . $notification->related_id;
+                                    break;
+                            }
+                        }
                     ?>
                     
-                    <div class="card mb-3 notification-card <?php echo $notification->is_read ? 'border-0' : 'border-start border-4 border-primary'; ?> <?php echo $bg_color; ?>">
+                    <<?php echo !empty($action_link) ? 'a href="' . $action_link . '"' : 'div'; ?> class="card mb-3 notification-card <?php echo $notification->is_read ? 'border-0' : 'border-start border-4 border-primary'; ?> <?php echo $bg_color; ?> <?php echo !empty($action_link) ? 'text-decoration-none' : ''; ?>">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div class="d-flex align-items-start">
@@ -111,71 +133,9 @@
                                         </a>
                                     </div>
                                 <?php endif; ?>
-
-                                <?php if ($notification->related_id): ?>
-                                    <?php
-                                        // Generate action link based on notification type
-                                        $action_link = '#';
-                                        $action_text = '';
-                                        switch ($notification->type) {
-                                            case 'excuse_response':
-                                            case 'excuse_request':
-                                                $action_link = BASE_URL . 'student/excuseRequests/view/' . $notification->related_id;
-                                                $action_text = 'View Request';
-                                                break;
-                                            case 'upcoming_class':
-                                            case 'venue_change':
-                                            case 'class_cancelled':
-                                                $action_link = BASE_URL . 'student/schedule/view/' . $notification->related_id;
-                                                $action_text = 'View Schedule';
-                                                break;
-                                            case 'marked_absent':
-                                                $action_link = BASE_URL . 'student/attendance/view/' . $notification->related_id;
-                                                $action_text = 'View Attendance';
-                                                break;
-                                            case 'new_request':
-                                                $action_link = BASE_URL . 'admin/requests/show/' . $notification->id . '/' . $notification->related_id;
-                                                $action_text = 'View Request';
-                                                break;
-                                        }
-                                    ?>
-                                    <?php if ($action_link != '#'): ?>
-                                        <a href="<?php echo $action_link; ?>" class="text-decoration-none text-dark">
-                                            <div class="card-body">
-                                                <div class="d-flex justify-content-between align-items-start">
-                                                    <div class="d-flex align-items-start">
-                                                        <div class="notification-icon me-3">
-                                                            <i class="fas fa-<?php echo $icon; ?> fa-lg <?php echo $notification->is_read ? 'text-muted' : 'text-primary'; ?>"></i>
-                                                        </div>
-                                                        <div>
-                                                            <h6 class="mb-1 <?php echo $notification->is_read ? 'text-muted' : 'text-dark'; ?>">
-                                                                <?php echo htmlspecialchars($notification->title); ?>
-                                                            </h6>
-                                                            <p class="mb-1 text-secondary">
-                                                                <?php echo htmlspecialchars($notification->message); ?>
-                                                            </p>
-                                                            <small class="text-muted">
-                                                                <i class="far fa-clock me-1"></i><?php echo $time; ?>
-                                                            </small>
-                                                        </div>
-                                                    </div>
-                                                    <?php if (!$notification->is_read): ?>
-                                                        <div class="ms-2">
-                                                            <a href="<?php echo BASE_URL; ?>notifications/mark_read/<?php echo $notification->id; ?>" 
-                                                               class="btn btn-sm btn-link text-primary text-decoration-none"
-                                                               title="Mark as read">
-                                                                <i class="fas fa-check"></i>
-                                                            </a>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    <?php endif; ?>
-                                <?php endif; ?>
                             </div>
                         </div>
-                    </div>
+                    </<?php echo !empty($action_link) ? 'a' : 'div'; ?>>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>

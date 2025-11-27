@@ -8,6 +8,13 @@
  */
 function is_logged_in()
 {
+    ob_start();
+    $log_file = __DIR__ . '/../../logs/session_debug.log';
+    $timestamp = date('Y-m-d H:i:s');
+    $url = $_SERVER['REQUEST_URI'] ?? 'N/A';
+    $session_data = json_encode($_SESSION);
+    file_put_contents($log_file, "[$timestamp] URL: $url | Session: $session_data\n", FILE_APPEND);
+    ob_end_clean();
     return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 }
 

@@ -10,6 +10,7 @@ class Enrollments extends Controller {
         $this->enrollmentModel = $this->model('StudentEnrollment');
         $this->userModel = $this->model('User');
         $this->courseModel = $this->model('Course');
+        $this->systemSettingModel = $this->model('SystemSetting'); // Added SystemSetting model
     }
 
     public function index() {
@@ -29,7 +30,21 @@ class Enrollments extends Controller {
                 'enrollment_date' => trim($_POST['enrollment_date'])
             ];
             if ($this->enrollmentModel->create($data)) {
+                // Also enroll student in units for the course
+                $current_semester = $this->systemSettingModel->getCurrentSemester();
+                if ($current_semester) {
+                    $units = $this->courseModel->getUnitsByCourseAndSemester($data['course_id'], $current_semester);
+                    foreach ($units as $unit) {
+                        if (!$this->enrollmentModel->isStudentEnrolledInUnit($data['student_id'], $unit->id)) {
+                            $this->enrollmentModel->enrollStudentInUnit($data['student_id'], $unit->id);
+                        }
+                    }
+                }
+                flash_message('success', 'Student enrolled successfully and units assigned.');
                 redirect('admin/enrollments');
+            } else {
+                flash_message('error', 'Failed to enroll student.');
+                redirect('admin/enrollments/enroll');
             }
         } else {
             $students = $this->userModel->getByRole('student');
@@ -91,12 +106,21 @@ class Enrollments extends Controller {
                 if ($this->enrollmentModel->isStudentEnrolled($student->id, $course_id)) {
                     $already_enrolled_count++;
                 } else {
-                    if ($this->enrollmentModel->enrollStudent($student->id, $course_id)) {
-                        $success_count++;
-                    } else {
-                        $failure_count++;
-                    }
-                }
+                                    if ($this->enrollmentModel->enrollStudent($student->id, $course_id)) {
+                                        // Also enroll student in units for the course
+                                        $current_semester = $this->systemSettingModel->getCurrentSemester();
+                                        if ($current_semester) {
+                                            $units = $this->courseModel->getUnitsByCourseAndSemester($course_id, $current_semester);
+                                            foreach ($units as $unit) {
+                                                if (!$this->enrollmentModel->isStudentEnrolledInUnit($student->id, $unit->id)) {
+                                                    $this->enrollmentModel->enrollStudentInUnit($student->id, $unit->id);
+                                                }
+                                            }
+                                        }
+                                        $success_count++;
+                                    } else {
+                                        $failure_count++;
+                                    }                }
             }
             fclose($handle);
 

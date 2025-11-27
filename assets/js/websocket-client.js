@@ -12,7 +12,7 @@ class WebSocketClient {
     connect() {
         if (this.socket && this.isConnected) return;
 
-        this.socket = new WebSocket('ws://localhost:8080');
+        this.socket = new WebSocket('ws://localhost:8081');
 
         this.socket.onopen = () => {
             console.log('WebSocket connected');

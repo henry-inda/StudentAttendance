@@ -382,4 +382,19 @@ class Report {
 
         return $results;
     }
+
+    public function getAttendanceOverviewByUnit($unit_id) {
+        $this->db->query("SELECT
+                un.unit_name,
+                AVG(CASE WHEN a.status = 'present' THEN 100 ELSE 0 END) as average_present_rate,
+                AVG(CASE WHEN a.status = 'absent' THEN 100 ELSE 0 END) as average_absent_rate,
+                AVG(CASE WHEN a.status = 'excused' THEN 100 ELSE 0 END) as average_excused_rate
+            FROM attendance a
+            JOIN schedules s ON a.schedule_id = s.id
+            JOIN units un ON s.unit_id = un.id
+            WHERE un.id = :unit_id
+            GROUP BY un.id, un.unit_name");
+        $this->db->bind(':unit_id', $unit_id);
+        return $this->db->single();
+    }
 }

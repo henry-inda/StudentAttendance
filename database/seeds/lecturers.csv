@@ -1,0 +1,16 @@
+full_name,email,password,role,department_id,course_id,phone,status
+Dr. John Okello,john.okello@example.com,Password123,lecturer,1,,+254712345678,active
+Dr. Jane Wanjiru,jane.wanjiru@example.com,Password123,lecturer,1,,+254712345679,active
+Prof. David Kimani,david.kimani@example.com,Password123,lecturer,1,,+254712345680,active
+Dr. Mary Achieng,mary.achieng@example.com,Password123,lecturer,2,,+254712345681,active
+Dr. Peter Otieno,peter.otieno@example.com,Password123,lecturer,2,,+254712345682,active
+Prof. Ann Njeri,ann.njeri@example.com,Password123,lecturer,2,,+254712345683,active
+Dr. Susan Cherono,susan.cherono@example.com,Password123,lecturer,3,,+254712345684,active
+Dr. Michael Kariuki,michael.kariuki@example.com,Password123,lecturer,3,,+254712345685,active
+Prof. Fatuma Ali,fatuma.ali@example.com,Password123,lecturer,3,,+254712345686,active
+Dr. Joseph Maina,joseph.maina@example.com,Password123,lecturer,4,,+254712345687,active
+Dr. Lucy Muthoni,lucy.muthoni@example.com,Password123,lecturer,4,,+254712345688,active
+Prof. James Omondi,james.omondi@example.com,Password123,lecturer,4,,+254712345689,active
+Dr. Esther Wangui,esther.wangui@example.com,Password123,lecturer,5,,+254712345690,active
+Dr. Robert Mwangi,robert.mwangi@example.com,Password123,lecturer,5,,+254712345691,active
+Prof. Grace Adhiambo,grace.adhiambo@example.com,Password123,lecturer,5,,+254712345692,active

@@ -27,6 +27,7 @@ class Dashboard extends Controller {
         $totalLecturers = count($this->userModel->getByRole('lecturer'));
         $totalCourses = count($this->courseModel->getAll());
         $totalUnits = count($this->unitModel->getAll());
+        $allUnits = $this->unitModel->getAll();
         
         // Placeholder for recent enrollments (needs a method in StudentEnrollmentModel)
         $recentEnrollments = []; 
@@ -38,32 +39,36 @@ class Dashboard extends Controller {
         // Placeholder for today's attendance rate
         $attendanceRate = 0;
 
-        // Get attendance overview for the chart
-        $start_date = date('Y-m-d', strtotime('-7 days'));
-        $end_date = date('Y-m-d');
-        $attendanceOverview = $this->reportModel->getAttendanceOverview($start_date, $end_date);
-
         $data = [
             'title' => 'Admin Dashboard',
             'total_students' => $totalStudents,
             'total_lecturers' => $totalLecturers,
             'total_courses' => $totalCourses,
             'total_units' => $totalUnits,
+            'units' => $allUnits, // Pass all units to the view
             'recent_enrollments' => $recentEnrollments,
             'attendance_rate' => $attendanceRate,
             'low_attendance_students' => $lowAttendanceStudents,
-            'attendance_overview' => $attendanceOverview
         ];
 
         $this->view('admin/dashboard', $data);
     }
 
-    public function getAttendanceOverviewData() {
-        $start_date = $_GET['start_date'] ?? date('Y-m-d', strtotime('-7 days'));
-        $end_date = $_GET['end_date'] ?? date('Y-m-d');
-
-        $attendanceOverview = $this->reportModel->getAttendanceOverview($start_date, $end_date);
+    public function getAttendanceOverviewDataByUnit() {
+        if (!isset($_GET['unit_id']) || empty($_GET['unit_id'])) {
+            echo json_encode([]);
+            return;
+        }
+        $unit_id = $_GET['unit_id'];
+        $attendanceOverview = $this->reportModel->getAttendanceOverviewByUnit($unit_id);
+        
         header('Content-Type: application/json');
-        echo json_encode($attendanceOverview);
+        // The frontend expects an array of objects for the chart.
+        // If getAttendanceOverviewByUnit returns a single object, wrap it in an array.
+        if ($attendanceOverview) {
+            echo json_encode([$attendanceOverview]);
+        } else {
+            echo json_encode([]);
+        }
     }
 }

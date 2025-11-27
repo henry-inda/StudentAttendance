@@ -4,6 +4,7 @@ class Attendance extends Controller {
     protected $scheduleModel;
     protected $enrollmentModel;
     protected $userModel;
+    protected $excuseRequestModel;
 
     public function __construct() {
         require_once 'app/helpers/auth_middleware.php';
@@ -13,6 +14,7 @@ class Attendance extends Controller {
         $this->scheduleModel = $this->model('ScheduleModel'); // Updated to ScheduleModel
         $this->enrollmentModel = $this->model('StudentEnrollment');
         $this->userModel = $this->model('User');
+        $this->excuseRequestModel = $this->model('ExcuseRequest');
     }
 
     public function index() {
@@ -39,20 +41,28 @@ class Attendance extends Controller {
 
         $date = date('Y-m-d');
         $existing_attendance = $this->attendanceModel->getBySchedule($schedule_id, $date);
-        $is_submitted = !empty($existing_attendance);
-
-        if ($is_submitted) {
-            flash_message('info', 'Attendance for this session has already been submitted. You can only review it.');
+        
+        $attendance_map = [];
+        foreach ($existing_attendance as $att) {
+            $attendance_map[$att->student_id] = $att->status;
         }
 
         $students = $this->enrollmentModel->getStudentsBySchedule($schedule_id);
+
+        // Fetch approved excuse requests for this schedule and date
+        $approvedExcuseRequests = $this->excuseRequestModel->getApprovedRequestsByScheduleAndDate($schedule_id, $date);
+        $preselected_statuses = [];
+        foreach ($approvedExcuseRequests as $req) {
+            $preselected_statuses[$req->student_id] = 'excused';
+        }
         
         $data = [
             'title' => 'Mark Attendance',
             'schedule' => $schedule,
             'students' => $students,
-            'is_submitted' => $is_submitted, // Pass submission status to the view
-            'existing_attendance' => $existing_attendance // Pass existing attendance for review
+            'is_submitted' => false, // Always allow marking until fully submitted
+            'attendance_map' => $attendance_map, // Pass existing attendance map
+            'preselected_statuses' => $preselected_statuses // Pass preselected statuses for excused students
         ];
         $this->view('lecturer/attendance/mark', $data);
     }
@@ -64,6 +74,7 @@ class Attendance extends Controller {
             $schedule_id = $_POST['schedule_id'] ?? null;
             $date = $_POST['date'] ?? null;
             $marked_by = get_session('user_id');
+            
 
             // --- NEW: Check if the class is currently in session ---
             $current_schedules = $this->scheduleModel->getClassesInSession(get_session('user_id'));
@@ -81,14 +92,6 @@ class Attendance extends Controller {
                 return;
             }
             // --- END NEW ---
-
-            // Check if attendance has already been submitted for this date
-            $existing_attendance = $this->attendanceModel->getBySchedule($schedule_id, $date);
-            if (!empty($existing_attendance)) {
-                flash_message('error', 'Attendance for this session on this date has already been submitted and cannot be modified.');
-                redirect('lecturer/attendance');
-                return;
-            }
 
             // Validate inputs
             $errors = [];
@@ -124,10 +127,10 @@ class Attendance extends Controller {
                     'notes' => $notes
                 ];
 
-                if (!$this->attendanceModel->markAttendance($attendanceData)) {
+                if (!$this->attendanceModel->upsertAttendance($attendanceData)) {
                     $all_marked_successfully = false;
                     // Log error or handle failure for individual student attendance marking
-                    error_log("Failed to mark attendance for student {$student_id} in schedule {$schedule_id}");
+                    error_log("Failed to upsert attendance for student {$student_id} in schedule {$schedule_id}");
                 } else {
                     // Send WebSocket notification to the affected student
                     require_once APP . '/helpers/websocket_helper.php';
@@ -173,7 +176,7 @@ class Attendance extends Controller {
                 flash_message('error', 'There was an issue marking attendance for some students.');
             }
             redirect('lecturer/attendance');
-        }
+        } 
     }
 
     public function view_history($unit_id) {
@@ -208,7 +211,6 @@ class Attendance extends Controller {
         }
 
         // Generate a short-lived JWT
-        $key = 'your_secret_key'; // Should be stored securely in config
         $payload = [
             'iss' => BASE_URL,
             'aud' => BASE_URL,
@@ -219,12 +221,14 @@ class Attendance extends Controller {
                 'date' => date('Y-m-d')
             ]
         ];
-        $jwt = Firebase\JWT\JWT::encode($payload, $key, 'HS256');
+        $jwt = Firebase\JWT\JWT::encode($payload, JWT_SECRET, 'HS256');
+
+        $qr_url = BASE_URL . 'student/myattendance/mark_by_qr?token=' . $jwt;
 
         // Generate QR code
         $result = Endroid\QrCode\Builder\Builder::create()
             ->writer(new Endroid\QrCode\Writer\PngWriter())
-            ->data($jwt)
+            ->data($qr_url)
             ->size(300)
             ->margin(10)
             ->build();

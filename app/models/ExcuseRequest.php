@@ -65,4 +65,11 @@ class ExcuseRequest {
         $result = $this->db->single();
         return $result ? $result->count : 0;
     }
+
+    public function getApprovedRequestsByScheduleAndDate($schedule_id, $date) {
+        $this->db->query("SELECT er.student_id FROM excuse_requests er WHERE er.schedule_id = :schedule_id AND er.date = :date AND er.status = 'approved'");
+        $this->db->bind(':schedule_id', $schedule_id);
+        $this->db->bind(':date', $date);
+        return $this->db->resultSet();
+    }
 }

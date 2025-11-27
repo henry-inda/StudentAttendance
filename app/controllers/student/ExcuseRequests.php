@@ -38,7 +38,7 @@ class ExcuseRequests extends Controller {
             }
 
             // Ensure the schedule is one of the upcoming schedules for the student
-            $upcomingSchedules = $this->scheduleModel->getUpcomingScheduleForStudent($student_id);
+            $upcomingSchedules = $this->scheduleModel->getUpcomingClassesForStudent($student_id);
             $validSchedule = false;
             foreach ($upcomingSchedules as $us) {
                 if ($us->id == $schedule_id) {
@@ -72,7 +72,7 @@ class ExcuseRequests extends Controller {
 
             // On validation errors or save failure, reload the create view with errors and previous input
             // Re-populate schedules from the upcoming schedules we fetched earlier
-            $schedules = isset($upcomingSchedules) ? $upcomingSchedules : $this->scheduleModel->getUpcomingScheduleForStudent(get_session('user_id'));
+            $schedules = isset($upcomingSchedules) ? $upcomingSchedules : $this->scheduleModel->getUpcomingClassesForStudent(get_session('user_id'));
             $data = [
                 'schedules' => $schedules,
                 'errors' => $errors,
@@ -86,7 +86,7 @@ class ExcuseRequests extends Controller {
         } else {
             // Get enrolled units to select schedule from
             // Only allow upcoming schedules for this student
-            $schedules = $this->scheduleModel->getUpcomingScheduleForStudent(get_session('user_id'));
+            $schedules = $this->scheduleModel->getUpcomingClassesForStudent(get_session('user_id'));
             $data = [
                 'schedules' => $schedules
             ];

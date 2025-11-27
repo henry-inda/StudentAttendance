@@ -1,0 +1,112 @@
+[2025-11-26 09:20:50] getBySchedule SQL: SELECT attendance.*, users.full_name as student_name FROM attendance JOIN users ON attendance.student_id = users.id WHERE schedule_id = :schedule_id AND date = :date
+[2025-11-26 09:20:50] getBySchedule Params: schedule_id=1, date=2025-11-26
+[2025-11-26 09:20:50] getBySchedule results: Array
+(
+)
+
+[2025-11-26 09:21:18] getBySchedule SQL: SELECT attendance.*, users.full_name as student_name FROM attendance JOIN users ON attendance.student_id = users.id WHERE schedule_id = :schedule_id AND date = :date
+[2025-11-26 09:21:18] getBySchedule Params: schedule_id=1, date=2025-11-26
+[2025-11-26 09:21:18] getBySchedule results: Array
+(
+    [0] => stdClass Object
+        (
+            [id] => 10
+            [schedule_id] => 1
+            [student_id] => 3
+            [date] => 2025-11-26
+            [status] => present
+            [marked_at] => 2025-11-26 09:21:13
+            [marked_by] => 0
+            [notes] => Marked via QR code scan
+            [student_name] => Flick
+        )
+
+)
+
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 67
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 67
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 67
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 67
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 67
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 67
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 67
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 67
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 67
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 67
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 67
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 67
+[2025-11-27 08:52:03] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 67
+[2025-11-27 08:54:31] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:54:31] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:54:31] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:54:31] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:54:31] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:54:31] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:54:31] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:54:31] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:54:31] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:54:31] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:54:31] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:54:31] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:54:31] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:56:59] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:56:59] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:56:59] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:56:59] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:56:59] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:56:59] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:56:59] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:56:59] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:56:59] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:56:59] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:56:59] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:56:59] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:56:59] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:57:07] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:57:07] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:57:07] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:57:07] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:57:07] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:57:07] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:57:07] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:57:07] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:57:07] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:57:07] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:57:07] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:57:07] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 08:57:07] Error: [2] Undefined property: stdClass::$unit_id in C:\xampp\htdocs\StudentAttendance\views\admin\dashboard.php on line 56
+[2025-11-27 14:32:36] Error: [8192] Creation of dynamic property Enrollments::$systemSettingModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\admin\Enrollments.php on line 13
+[2025-11-27 14:36:20] Error: [8192] Creation of dynamic property Enrollments::$systemSettingModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\admin\Enrollments.php on line 13
+[2025-11-27 14:36:22] Error: [8192] Creation of dynamic property Enrollments::$systemSettingModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\admin\Enrollments.php on line 13
+[2025-11-27 14:36:36] Error: [8192] Creation of dynamic property Enrollments::$systemSettingModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\admin\Enrollments.php on line 13
+[2025-11-27 14:36:36] Error: [8192] Creation of dynamic property Enrollments::$systemSettingModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\admin\Enrollments.php on line 13
+[2025-11-27 14:48:41] Error: [8192] Creation of dynamic property MySchedule::$scheduleModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\MySchedule.php on line 6
+[2025-11-27 14:48:41] Error: [8192] Creation of dynamic property MySchedule::$enrollmentModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\MySchedule.php on line 7
+[2025-11-27 14:48:41] Error: [8192] Creation of dynamic property MySchedule::$unitModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\MySchedule.php on line 8
+[2025-11-27 14:49:01] Error: [8192] Creation of dynamic property ExcuseRequests::$excuseRequestModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\ExcuseRequests.php on line 6
+[2025-11-27 14:49:01] Error: [8192] Creation of dynamic property ExcuseRequests::$enrollmentModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\ExcuseRequests.php on line 7
+[2025-11-27 14:49:01] Error: [8192] Creation of dynamic property ExcuseRequests::$scheduleModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\ExcuseRequests.php on line 8
+[2025-11-27 14:49:01] Error: [8192] Creation of dynamic property ExcuseRequests::$unitModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\ExcuseRequests.php on line 9
+[2025-11-27 14:49:40] Error: [8192] Creation of dynamic property MySchedule::$scheduleModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\MySchedule.php on line 6
+[2025-11-27 14:49:40] Error: [8192] Creation of dynamic property MySchedule::$enrollmentModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\MySchedule.php on line 7
+[2025-11-27 14:49:40] Error: [8192] Creation of dynamic property MySchedule::$unitModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\MySchedule.php on line 8
+[2025-11-27 14:49:48] Error: [8192] Creation of dynamic property MySchedule::$scheduleModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\MySchedule.php on line 6
+[2025-11-27 14:49:48] Error: [8192] Creation of dynamic property MySchedule::$enrollmentModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\MySchedule.php on line 7
+[2025-11-27 14:49:48] Error: [8192] Creation of dynamic property MySchedule::$unitModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\MySchedule.php on line 8
+[2025-11-27 14:49:55] Error: [8192] Creation of dynamic property ExcuseRequests::$excuseRequestModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\ExcuseRequests.php on line 6
+[2025-11-27 14:49:55] Error: [8192] Creation of dynamic property ExcuseRequests::$enrollmentModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\ExcuseRequests.php on line 7
+[2025-11-27 14:49:55] Error: [8192] Creation of dynamic property ExcuseRequests::$scheduleModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\ExcuseRequests.php on line 8
+[2025-11-27 14:49:55] Error: [8192] Creation of dynamic property ExcuseRequests::$unitModel is deprecated in C:\xampp\htdocs\StudentAttendance\app\controllers\student\ExcuseRequests.php on line 9

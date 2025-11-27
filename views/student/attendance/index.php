@@ -29,16 +29,16 @@
                                 <i class="fas fa-book me-2"></i>
                                 <?php echo $unitAttendance->unit_name; ?>
                             </h5>
-                            <span class="badge bg-<?php echo $unitAttendance->percentage >= 75 ? 'success' : 'warning'; ?> rounded-pill">
-                                <?php echo $unitAttendance->percentage; ?>%
+                            <span class="badge bg-<?php echo $unitAttendance->attendance_percentage >= 75 ? 'success' : 'warning'; ?> rounded-pill">
+                                <?php echo $unitAttendance->attendance_percentage; ?>%
                             </span>
                         </div>
                         
                         <div class="progress mb-3" style="height: 10px;">
-                            <div class="progress-bar bg-<?php echo $unitAttendance->percentage >= 75 ? 'success' : 'warning'; ?>" 
+                            <div class="progress-bar bg-<?php echo $unitAttendance->attendance_percentage >= 75 ? 'success' : 'warning'; ?>" 
                                  role="progressbar" 
-                                 style="width: <?php echo $unitAttendance->percentage; ?>%;" 
-                                 aria-valuenow="<?php echo $unitAttendance->percentage; ?>" 
+                                 style="width: <?php echo $unitAttendance->attendance_percentage; ?>%;" 
+                                 aria-valuenow="<?php echo $unitAttendance->attendance_percentage; ?>" 
                                  aria-valuemin="0" 
                                  aria-valuemax="100">
                             </div>

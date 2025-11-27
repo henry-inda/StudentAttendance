@@ -58,11 +58,19 @@
                     </thead>
                     <tbody>
                         <?php foreach ($data['students'] as $student): ?>
+                        <?php
+                            $current_status = 'absent'; // Default to absent
+                            if (isset($data['attendance_map'][$student->id])) {
+                                $current_status = $data['attendance_map'][$student->id];
+                            } elseif (isset($data['preselected_statuses'][$student->id]) && $data['preselected_statuses'][$student->id] === 'excused') {
+                                $current_status = 'excused';
+                            }
+                        ?>
                         <tr>
                             <td><?php echo $student->full_name; ?></td>
-                            <td><input type="radio" name="attendance[<?php echo $student->id; ?>]" value="present" checked></td>
-                            <td><input type="radio" name="attendance[<?php echo $student->id; ?>]" value="absent"></td>
-                            <td><input type="radio" name="attendance[<?php echo $student->id; ?>]" value="excused"></td>
+                            <td><input type="radio" name="attendance[<?php echo $student->id; ?>]" value="present" <?php echo ($current_status === 'present') ? 'checked' : ''; ?>></td>
+                            <td><input type="radio" name="attendance[<?php echo $student->id; ?>]" value="absent" <?php echo ($current_status === 'absent') ? 'checked' : ''; ?>></td>
+                            <td><input type="radio" name="attendance[<?php echo $student->id; ?>]" value="excused" <?php echo ($current_status === 'excused') ? 'checked' : ''; ?>></td>
                             <td><input type="text" name="notes[<?php echo $student->id; ?>]" class="form-control"></td>
                         </tr>
                         <?php endforeach; ?>
@@ -75,7 +83,6 @@
     </div>
 </div>
 
-<script src="<?php echo BASE_URL; ?>assets/js/websocket-client.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const scheduleId = <?php echo $data['schedule']->id; ?>;
@@ -83,7 +90,7 @@
         const userRole = '<?php echo get_session('user_role'); ?>';
 
         // Initialize WebSocket connection
-        const ws = new WebSocket('ws://localhost:8080'); // Adjust if your WebSocket server is on a different host/port
+        const ws = new WebSocket('ws://localhost:8081'); // Adjust if your WebSocket server is on a different host/port
 
         ws.onopen = function() {
             console.log('WebSocket connected');

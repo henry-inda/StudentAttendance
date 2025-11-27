@@ -6,6 +6,7 @@
         "textalk/websocket": "^1.5",
         "endroid/qr-code": "^4.8",
         "firebase/php-jwt": "^6.11",
-        "tecnickcom/tcpdf": "^6.10"
+        "tecnickcom/tcpdf": "^6.10",
+        "vlucas/phpdotenv": "^5.6"
     }
 }

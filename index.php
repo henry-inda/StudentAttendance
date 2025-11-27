@@ -1,4 +1,14 @@
 <?php
+// Custom Error Handler
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    $log_file = __DIR__ . '/logs/error.log';
+    $timestamp = date('Y-m-d H:i:s');
+    $error_message = "[$timestamp] Error: [$errno] $errstr in $errfile on line $errline\n";
+    file_put_contents($log_file, $error_message, FILE_APPEND);
+    // Return true to prevent the default PHP error handler from running
+    return true;
+});
+
 ob_start();
 require_once 'app/config/config.php'; // Include config.php first
 require_once 'app/core/Database.php'; // Include Database.php early

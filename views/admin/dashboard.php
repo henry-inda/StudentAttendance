@@ -46,20 +46,21 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Attendance Overview</h5>
+
                         <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="start_date" class="form-label">Start Date</label>
-                                <input type="date" class="form-control" id="start_date" value="<?php echo date('Y-m-d', strtotime('-7 days')); ?>">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="end_date" class="form-label">End Date</label>
-                                <input type="date" class="form-control" id="end_date" value="<?php echo date('Y-m-d'); ?>">
-                            </div>
-                            <div class="col-md-4 d-flex align-items-end">
-                                <button class="btn btn-primary" id="update_chart">Update Chart</button>
+                            <div class="col-md-6">
+                                <label for="unit_select" class="form-label">Filter by Unit</label>
+                                <select class="form-control" id="unit_select">
+                                    <option value="">Select a Unit</option>
+                                    <?php foreach ($data['units'] as $unit): ?>
+                                        <option value="<?php echo $unit->id; ?>"><?php echo $unit->unit_name; ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
                         </div>
-                        <canvas id="attendanceChart"></canvas>
+                        <div id="chartContainer">
+                            <canvas id="attendanceChart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -115,21 +116,27 @@
 <?php require_once 'views/layouts/footer.php'; ?>
 
 <script>
-    const ctx = document.getElementById('attendanceChart').getContext('2d');
+    const chartContainer = document.getElementById('chartContainer');
     let attendanceChart;
+    let ctx;
+
+    function createOrUpdateCanvas() {
+        chartContainer.innerHTML = '<canvas id="attendanceChart"></canvas>';
+        ctx = document.getElementById('attendanceChart').getContext('2d');
+    }
 
     function createChart(data) {
         if (attendanceChart) {
             attendanceChart.destroy();
         }
 
-        const labels = data.map(item => item.date);
-        const presentData = data.map(item => item.present_rate);
-        const absentData = data.map(item => item.absent_rate);
-        const excusedData = data.map(item => item.excused_rate);
+        const labels = data.map(item => item.unit_name);
+        const presentData = data.map(item => item.average_present_rate);
+        const absentData = data.map(item => item.average_absent_rate);
+        const excusedData = data.map(item => item.average_excused_rate);
 
         attendanceChart = new Chart(ctx, {
-            type: 'line',
+            type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
@@ -153,8 +160,10 @@
                 }]
             },
             options: {
+                indexAxis: 'y',
+                responsive: true,
                 scales: {
-                    y: {
+                    x: {
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
@@ -167,19 +176,33 @@
         });
     }
 
-    function updateChart() {
-        const startDate = document.getElementById('start_date').value;
-        const endDate = document.getElementById('end_date').value;
+    const unitSelect = document.getElementById('unit_select');
 
-        fetch(`<?php echo BASE_URL; ?>admin/dashboard/getAttendanceOverviewData?start_date=${startDate}&end_date=${endDate}`)
-            .then(response => response.json())
-            .then(data => {
-                createChart(data);
-            });
+    function fetchAttendanceDataByUnit() {
+        const unitId = unitSelect.value;
+        if (unitId) {
+            fetch(`<?php echo BASE_URL; ?>admin/dashboard/getAttendanceOverviewDataByUnit?unit_id=${unitId}`)
+                .then(response => response.json())
+                .then(data => {
+                    createOrUpdateCanvas();
+                    if (data && data.length > 0) {
+                        createChart(data);
+                    } else {
+                        chartContainer.innerHTML = '<p class="text-center">No attendance data for this unit.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching attendance data:', error);
+                    chartContainer.innerHTML = '<p class="text-center text-danger">Error loading attendance data.</p>';
+                });
+        } else {
+            chartContainer.innerHTML = '<p class="text-center">Please select a unit to view attendance overview.</p>';
+        }
     }
 
-    document.getElementById('update_chart').addEventListener('click', updateChart);
+    // Event listener for unit select change
+    unitSelect.addEventListener('change', fetchAttendanceDataByUnit);
 
     // Initial chart load
-    createChart(<?php echo json_encode($data['attendance_overview']); ?>);
+    fetchAttendanceDataByUnit();
 </script>
