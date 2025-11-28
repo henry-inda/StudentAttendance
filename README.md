@@ -33,7 +33,7 @@ This will start:
 If you encounter any issues:
 
 1. Make sure XAMPP is running (Apache and MySQL services)
-2. Check that ports 8000 and 8080 are not in use
+2. Check that ports 8000 and 8081 are not in use
 3. If windows don't open:
    - Try running the script as administrator
    - Check Windows PowerShell execution policy
